@@ -1,4 +1,6 @@
-# PRD — App da Casa · Módulo Finanças (MVP v1)
+# PRD — Casita · Módulo Finanças (MVP v1)
+
+> **Versão 1.2 (13/10/2026):** incorpora o modelo real do cartão BTG (responsabilidade por transação, acerto entre o casal, terceiros que usam o cartão) e traz a importação de **PDF** para o MVP.
 
 > **Como usar este documento:** coloque-o na raiz do repositório (como `PRD.md` ou dentro do `CLAUDE.md`) e peça ao Claude Code para seguir as fases da seção 10, uma por vez.
 
@@ -38,7 +40,9 @@ Além disso, a planilha exige trabalho manual de formatação e categorização 
 | Dar visibilidade das metas | Cada meta mostra o valor atual, o valor-alvo e o ritmo necessário |
 | Uso real pelos dois | Os dois usuários acessam pelo menos uma vez por semana |
 
-**Fora do escopo do MVP:** Open Finance e integração bancária automática, leitura de fatura em PDF, investimentos detalhados (rentabilidade, carteira), cálculo de acerto entre o casal, os demais módulos da casa e um app nativo (o MVP é uma web app responsiva/PWA).
+**Fora do escopo do MVP:** Open Finance e integração bancária automática, investimentos detalhados (rentabilidade, carteira), os demais módulos da casa e um app nativo (o MVP é uma web app responsiva/PWA).
+
+> Mudança na v1.2: a leitura de fatura em **PDF** e o **acerto entre o casal** entraram no MVP, porque refletem como o casal já trabalha hoje (faturas em PDF e reembolso da parte do Thiago no cartão BTG).
 
 ---
 
@@ -46,7 +50,12 @@ Além disso, a planilha exige trabalho manual de formatação e categorização 
 
 - **Household (Casa):** a entidade que agrupa todos os dados. O MVP tem uma casa com **dois membros**.
 - **Membros:** Becca e o noivo. Os dois têm permissões iguais (ambos podem ver e editar tudo).
-- **Modelo de divisão: "por conta".** Cada conta fixa e cada cartão tem **um responsável**. Não existe divisão percentual nem acerto de contas entre os dois. O app mostra os totais **por responsável**, apenas para dar visibilidade.
+- **Modelo de divisão (atualizado na v1.2):**
+  - **Contas fixas e assinaturas:** um responsável por item, como antes.
+  - **Cartões:** o cartão tem um **pagador** (quem paga a fatura; por exemplo, o BTG é debitado automaticamente na conta da Rebecca), mas **cada transação tem seu próprio responsável**. Um cartão pode ser compartilhado.
+  - **Responsáveis podem ser pessoas que não usam o app** (por exemplo, um familiar que usa o cartão). Elas aparecem como "pessoas" na casa, sem login.
+  - Transações sem responsável definido ficam como **"A confirmar"** até alguém atribuir.
+  - **Acerto:** quando a parte de alguém é paga por outra pessoa (o pagador do cartão), o app calcula quanto essa pessoa deve devolver, por competência, e registra os reembolsos (ver 4.3c).
 - Onboarding: um membro cria a casa e convida o outro por e-mail (link de convite).
 
 ---
@@ -68,8 +77,18 @@ Além disso, a planilha exige trabalho manual de formatação e categorização 
 - Um resumo semanal opcional ("vencem esta semana: X contas, R$ Y").
 
 ### 4.3 Faturas de cartão: importação e categorização
-- Cadastro de cartões com nome, banco, **titular (responsável)**, dia de fechamento, dia de vencimento e **apenas os 4 últimos dígitos**. Nunca armazenar o número completo.
-- Fluxo de importação via **CSV** (ver fluxo 5.2):
+- Cadastro de cartões com nome, banco, **pagador** (quem paga a fatura), forma de pagamento da fatura (débito automático ou manual), dia de fechamento, dia de vencimento e **apenas os 4 últimos dígitos**. Nunca armazenar o número completo.
+- **Formato principal: PDF da fatura** (é o que os bancos do casal oferecem). CSV e OFX continuam aceitos como alternativa.
+- **Importação de PDF (v1):**
+  1. Extrair o texto do PDF. Se o PDF tiver **senha**, o app pede a senha na hora e **não a armazena**.
+  2. Extrair as transações com um modelo de IA usando **saída estruturada** (data, descrição, valor, parcela, tipo: compra, crédito/estorno, tarifa/anuidade, IOF) e os dados de cabeçalho (total, vencimento, período de compras).
+  3. **Conciliação obrigatória:** a soma das transações extraídas deve bater com o total da fatura (considerando créditos). Se não bater, a prévia destaca a divergência e **não permite confirmar** sem revisão manual.
+  4. Prévia editável → confirmação humana → salvar. Nada é salvo sem confirmação.
+  5. O PDF não fica armazenado depois da importação (guardar só os metadados do lote).
+  - Se o texto do PDF for extraível e estável para um banco específico (por exemplo, o BTG), pode ser criado depois um parser determinístico para esse banco, mais barato e previsível. Esse parser é uma otimização, não um requisito do MVP.
+- **Responsável por transação:** na prévia, cada transação recebe um responsável. Sugestão automática por regras aprendidas (por exemplo, "UBER → Thiago"), igual à categorização. Sem regra, fica "A confirmar".
+- Tipos especiais de lançamento: **créditos/estornos** (valores negativos), **tarifas e anuidade** (mensalidade do cartão) e IOF devem aparecer separados na prévia.
+- Fluxo de importação de CSV/OFX (ver fluxo 5.2), com suporte a **arquivos em Windows-1252 (Latin-1) e separador ponto e vírgula**, comuns em exportações brasileiras:
   - O usuário escolhe o cartão e o mês de referência da fatura.
   - **Mapeamento de colunas** (data, descrição, valor, parcela). O mapeamento fica **salvo por cartão**, para que as próximas importações sejam em um clique.
   - Prévia antes de confirmar, com categoria sugerida e alertas de duplicidade.
@@ -89,6 +108,13 @@ Assinaturas são uma **entidade própria**, separada das contas fixas, porque co
 - **Alertas:** aumento de preço detectado na conciliação ("Spotify subiu de R$ X para R$ Y"), cobrança esperada que não apareceu na fatura e fim do teste grátis (D-3).
 - **Tela de assinaturas:** custo total mensal e anualizado, lista ordenada por próxima cobrança, filtros por responsável e por cartão.
 
+### 4.3c Acerto entre o casal
+- Para cada fatura, o app calcula a **parte de cada responsável**. Quando o pagador do cartão é diferente do responsável, essa parte vira um **valor a acertar** (por exemplo, a parte do Thiago numa fatura que é debitada da conta da Rebecca).
+- Visão de acerto por competência: parte devida, valor devolvido, saldo e status (pendente, parcial, quitado).
+- Registrar reembolso: valor, data, quem pagou a quem e observação. Um reembolso pode quitar várias competências (o mais antigo primeiro, com possibilidade de escolher).
+- Saldo total em aberto em destaque ("Thiago → Rebecca: R$ X em aberto").
+- Transações "A confirmar" ficam fora do cálculo até serem atribuídas, e o app avisa quando isso acontece ("R$ X ainda sem responsável nesta fatura").
+
 ### 4.4 Metas e sonhos
 - Campos: nome, valor-alvo, data-alvo (opcional), imagem ou emoji (opcional), responsável ou "conjunta".
 - Aportes registrados manualmente (valor, data e quem aportou).
@@ -100,7 +126,7 @@ Ordem de prioridade dos blocos:
 1. **Contas e assinaturas do mês:** uma lista única em ordem cronológica com contas fixas, faturas de cartão e assinaturas (as assinaturas no cartão vêm marcadas como "no cartão X"). Os itens atrasados ficam no topo, com ação rápida de "marcar como pago".
 2. **Resumo do mês:** total pago, total a vencer e total atrasado, além do **total comprometido com assinaturas** (mensal).
 3. **Gastos por categoria** no mês (barras horizontais, mais legíveis do que um gráfico de pizza).
-4. **Por responsável:** quanto cada um tem de contas, faturas e assinaturas no mês.
+4. **Por responsável:** quanto cada pessoa gastou no mês (incluindo terceiros como familiares) e o **saldo de acerto em aberto** entre o casal.
 5. **Metas:** cards com o progresso.
 
 Sugestões pendentes (por exemplo, "3 possíveis assinaturas detectadas") aparecem como um aviso discreto no topo, que pode ser dispensado.
@@ -116,11 +142,15 @@ Login → criar casa → convidar parceiro(a) → cadastrar cartões → cadastr
 - Cada etapa pode ser pulada e tem um estado vazio que explica o próximo passo.
 
 ### 5.2 Importar fatura
-Upload do arquivo (**CSV ou OFX**, exportado direto do banco, sem conversão manual) → selecionar cartão e mês de referência → (só na primeira vez) mapear colunas → prévia com categorias sugeridas e duplicadas marcadas → ajustar → confirmar → resumo ("42 transações importadas, 3 duplicadas ignoradas, total R$ X").
+Upload do arquivo (**PDF da fatura**, ou CSV/OFX quando disponível; sem conversão manual) → (se tiver senha) informar a senha do PDF → selecionar cartão e mês de referência → (só na primeira vez) mapear colunas → prévia com categorias sugeridas e duplicadas marcadas → ajustar → confirmar → resumo ("42 transações importadas, 3 duplicadas ignoradas, total R$ X").
 - Erros de parsing devem dizer **qual linha** falhou e por quê. O app não deve falhar silenciosamente.
 - A importação inteira pode ser desfeita (excluir lote).
 - Depois de confirmar: conciliação com as assinaturas existentes e sugestão de novas assinaturas detectadas.
-- **v1.1 — PDF:** extração por IA para bancos que só fornecem PDF, com **tela de revisão obrigatória**. Antes de salvar, o app compara a soma das transações extraídas com o total da fatura e destaca qualquer divergência. Nada é salvo sem confirmação humana.
+- **PDF (v1):** a prévia mostra o total extraído ao lado da soma das transações, com um indicador claro de "confere" ou "não confere". Também mostra quanto ficou "A confirmar" por responsável.
+- Feedback de progresso durante a extração (que pode levar alguns segundos): etapas visíveis ("Lendo o PDF", "Identificando transações", "Conferindo o total") e possibilidade de cancelar.
+
+### 5.2c Registrar um acerto
+Home ou tela de Acertos → "Registrar reembolso" → valor, data, de quem para quem → o app mostra quais competências serão quitadas → confirmar.
 
 ### 5.2b Gerenciar assinaturas
 Sugestão detectada → confirmar (os dados vêm pré-preenchidos) ou descartar ("não é assinatura", para não sugerir de novo). Cadastro manual também está disponível. Cancelar uma assinatura a marca como `cancelada`, e o app avisa se a cobrança continuar aparecendo nas faturas.
@@ -139,10 +169,17 @@ Card da meta → "Adicionar aporte" → valor → progresso atualizado.
 households(id, name, created_at)
 members(id, household_id, user_id, display_name, role)
 categories(id, household_id, name, icon, color, is_default)
-cards(id, household_id, owner_member_id, name, bank, last4, closing_day, due_day, csv_mapping jsonb)
-statements(id, card_id, reference_month, due_date, total_amount, import_batch_id, status)
+people(id, household_id, member_id null, display_name)   -- inclui quem não usa o app
+cards(id, household_id, payer_person_id, name, bank, last4, closing_day, due_day,
+      bill_payment_method, csv_mapping jsonb)
+statements(id, card_id, reference_month, due_date, purchase_period_start, purchase_period_end,
+           total_amount, credits_amount, import_batch_id, source_format, reconciled bool, status)
 transactions(id, household_id, card_id, statement_id, date, description_raw, description_normalized,
-             amount, installment_current, installment_total, category_id, import_batch_id, dedupe_hash)
+             amount, kind, installment_current, installment_total, category_id,
+             responsible_person_id null=a confirmar, import_batch_id, dedupe_hash)
+responsibility_rules(id, household_id, match_pattern, person_id, created_by)
+settlements(id, household_id, from_person_id, to_person_id, amount, paid_at, note, created_by)
+settlement_allocations(id, settlement_id, statement_id, amount)
 category_rules(id, household_id, match_pattern, category_id, created_by)
 import_batches(id, household_id, card_id, file_name, created_by, created_at, rows_imported, rows_skipped)
 bills(id, household_id, name, category_id, owner_member_id, amount, is_estimated,
@@ -207,7 +244,8 @@ Se o agente identificar uma alternativa mais simples com o mesmo resultado, ele 
 
 **Segurança e privacidade**
 - Dados financeiros: RLS obrigatória, nenhum dado sensível em logs, e apenas os 4 últimos dígitos dos cartões.
-- Os arquivos CSV são processados e **não ficam armazenados** após a importação (guardar apenas os metadados do lote).
+- Os arquivos CSV e PDF são processados e **não ficam armazenados** após a importação (guardar apenas os metadados do lote). Senhas de PDF nunca são armazenadas nem registradas em log.
+- **Extração por IA:** o conteúdo da fatura é enviado para a API do modelo de IA. A chave da API fica só no servidor (nunca no navegador), e a política de uso de dados do provedor deve ser verificada e registrada em `docs/DECISIONS.md`.
 
 ---
 
@@ -215,16 +253,17 @@ Se o agente identificar uma alternativa mais simples com o mesmo resultado, ele 
 
 | Fase | Entrega | Critério de pronto |
 |---|---|---|
-| 0 | Setup: projeto, Supabase, auth, layout responsivo com navegação por módulos | Login funcionando no celular e no desktop |
-| 1 | Casa e membros: criar casa, convite, RLS | Segundo usuário entra pelo convite e vê os mesmos dados; testes de RLS passando |
-| 2 | Contas fixas e ocorrências: CRUD, geração de recorrência, marcar como pago | Ocorrências do mês corretas; status `atrasado` automático |
-| 3 | Lembretes: push e e-mail, configuração por conta | Lembrete chega só ao responsável, D-3 e D-0 |
-| 4 | Cartões e importação de CSV: mapeamento, prévia, deduplicação, desfazer | Importar a mesma fatura duas vezes não duplica nada; testes do parser passando |
+| 0 | Fundação: projeto, design system Casita, layout responsivo | Página /design-system aprovada |
+| 1 | Casa, membros e pessoas: login, criar casa, convite, pessoas sem login, RLS | Segundo usuário entra pelo convite e vê os mesmos dados; testes de RLS passando |
+| 2 | Contas fixas e ocorrências: CRUD, recorrência, marcar como pago | Ocorrências do mês corretas; status `atrasado` automático |
+| 3 | Cartões e importação de fatura (PDF + CSV/OFX): extração, conciliação do total, prévia, deduplicação, desfazer | A fatura de set/2026 do BTG importa com o total conferindo; importar duas vezes não duplica |
+| 4 | Responsáveis e acerto: responsável por transação, regras aprendidas, "A confirmar", acerto por competência, reembolsos | A divisão de set/2026 bate com a planilha atual; saldo de acerto correto |
 | 5 | Categorização: categorias padrão, regras aprendidas, edição em massa | Segunda importação do mesmo cartão vem com 70% ou mais já categorizado |
-| 5b | Assinaturas: cadastro, conciliação com faturas, detecção de recorrência, alertas de preço e de teste grátis | Nenhuma assinatura no cartão é contada duas vezes; testes da detecção passando |
-| 6 | Metas e aportes | Ritmo necessário calculado corretamente |
-| 7 | Home / visão do mês | Todos os blocos da seção 4.5 com dados reais e estados vazios |
-| 8 | Revisão de acessibilidade e polimento | Checklist WCAG AA revisado; Lighthouse acessibilidade ≥ 95 |
+| 6 | Assinaturas: cadastro, conciliação com faturas, detecção, alertas | Nenhuma assinatura no cartão é contada duas vezes |
+| 7 | Home / visão do mês com dados reais | Todos os blocos da seção 4.5 com dados reais e estados vazios |
+| 8 | Lembretes: push e e-mail, configuração por conta | Lembrete chega só ao responsável, D-3 e D-0 |
+| 9 | Metas e aportes | Ritmo necessário calculado corretamente |
+| 10 | Migração do histórico, revisão de acessibilidade e deploy | Histórico de jun–set/2026 importado; Lighthouse acessibilidade ≥ 95; app instalável no celular |
 
 ---
 
@@ -240,8 +279,10 @@ Se o agente identificar uma alternativa mais simples com o mesmo resultado, ele 
 
 ## 12. Pontos em aberto
 
-- [ ] Gastos no cartão de um são sempre "dele(a)", ou existem gastos da casa feitos no cartão pessoal que precisam de uma marcação "casa" vs. "pessoal"?
-- [ ] Quais bancos oferecem exportação em CSV/OFX e quais só oferecem PDF? (Define se o PDF por IA sobe para a v1.)
+- [x] ~~Gastos compartilhados no cartão~~ → resolvido na v1.2: responsável por transação.
+- [x] ~~PDF na v1?~~ → sim, os bancos do casal são focados em PDF.
+- [ ] Os PDFs das faturas têm senha? Precisamos de um PDF de cada banco para os testes (mantido fora do Git).
+- [ ] Gastos de uso comum da casa no cartão (mercado, por exemplo) são de um responsável ou divididos 50/50? Se divididos, o MVP precisa de um responsável "Casa (50/50)".
 - [ ] Quais bancos e cartões vamos importar? Precisamos de **um CSV de exemplo de cada** para criar os testes do parser.
 - [ ] Registrar renda no MVP para mostrar o saldo do mês, ou deixar para a v2?
 - [ ] Importar o histórico da planilha atual (migração única) ou começar do zero?
