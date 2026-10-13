@@ -41,16 +41,25 @@ export const MIN_RATIO: Record<PairKind, number> = { text: 4.5, ui: 3 };
  * adicione o par aqui — o teste garante o contraste nos dois temas.
  */
 export const CONTRAST_PAIRS: ContrastPair[] = [
+  // Texto principal e de apoio
   { fg: "foreground", bg: "background", kind: "text", usage: "Texto principal" },
   { fg: "foreground", bg: "surface", kind: "text", usage: "Texto em faixas e campos" },
   { fg: "foreground", bg: "card", kind: "text", usage: "Texto em cards" },
+  { fg: "foreground", bg: "accent-soft", kind: "text", usage: "Item ativo da navegação" },
   { fg: "foreground-secondary", bg: "background", kind: "text", usage: "Texto de apoio" },
   { fg: "foreground-secondary", bg: "surface", kind: "text", usage: "Texto de apoio em faixas" },
   { fg: "foreground-secondary", bg: "card", kind: "text", usage: "Texto de apoio em cards" },
-  { fg: "neutral", bg: "background", kind: "text", usage: "Ícones e rótulos secundários (só no fundo)" },
+  { fg: "neutral", bg: "background", kind: "text", usage: "Ícones e rótulos secundários" },
+  // Sálvia: só como fundo, com texto grafite escuro
+  { fg: "accent-foreground", bg: "accent", kind: "text", usage: "Texto sobre sálvia (card de destaque)" },
+  // Primário (verde grafite) e links
   { fg: "primary-foreground", bg: "primary", kind: "text", usage: "Rótulo do botão primário" },
   { fg: "primary-foreground", bg: "primary-hover", kind: "text", usage: "Rótulo do botão primário (hover)" },
-  { fg: "primary", bg: "background", kind: "ui", usage: "Borda/ícone coral sobre o fundo" },
+  { fg: "primary", bg: "background", kind: "ui", usage: "Botão primário sobre o fundo" },
+  { fg: "link", bg: "background", kind: "text", usage: "Link e botão ghost" },
+  { fg: "link", bg: "surface", kind: "text", usage: "Link sobre faixa bege" },
+  { fg: "link", bg: "card", kind: "text", usage: "Link em card" },
+  // Erro, bordas e foco
   { fg: "destructive", bg: "background", kind: "text", usage: "Mensagem de erro" },
   { fg: "destructive", bg: "card", kind: "text", usage: "Mensagem de erro em card" },
   { fg: "input", bg: "background", kind: "ui", usage: "Borda de campo" },
@@ -58,6 +67,8 @@ export const CONTRAST_PAIRS: ContrastPair[] = [
   { fg: "input", bg: "card", kind: "ui", usage: "Borda de campo em card" },
   { fg: "ring", bg: "background", kind: "ui", usage: "Anel de foco" },
   { fg: "ring", bg: "surface", kind: "ui", usage: "Anel de foco em faixa" },
+  { fg: "ring", bg: "card", kind: "ui", usage: "Anel de foco em card" },
+  // Status financeiros (sempre com ícone + texto)
   { fg: "status-paid-fg", bg: "status-paid-bg", kind: "text", usage: "Badge Pago" },
   { fg: "status-due-fg", bg: "status-due-bg", kind: "text", usage: "Badge A vencer" },
   { fg: "status-overdue-fg", bg: "status-overdue-bg", kind: "text", usage: "Badge Atrasado" },

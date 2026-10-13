@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Check, Home, LoaderCircle, Plus, Receipt, Tv, Wifi, Zap } from "lucide-react";
+import { ArrowLeft, Check, Home, LoaderCircle, Plus, Receipt, Tv, Wifi, X, Zap } from "lucide-react";
 import { Logo } from "@/components/app-shell/logo";
+import { Logo as BrandLogo } from "@/components/brand/logo";
+import { Mascot, type MascotPose } from "@/components/brand/mascot";
 import { Money } from "@/components/money";
 import { StatusBadge } from "@/components/status-badge";
 import { EmptyState, ErrorState, ListSkeleton } from "@/components/states";
@@ -15,6 +17,7 @@ import { formatDueDate } from "@/lib/format";
 import { evaluateContrast } from "@/lib/tokens";
 import { loadThemeTokens } from "@/lib/tokens-server";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Design system",
@@ -22,6 +25,7 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS = [
+  { id: "marca", label: "Marca" },
   { id: "cores", label: "Cores" },
   { id: "contraste", label: "Contraste" },
   { id: "tipografia", label: "Tipografia" },
@@ -38,6 +42,8 @@ const COLOR_GROUPS: { title: string; tokens: { name: string; usage: string }[] }
       { name: "background", usage: "Fundo da página" },
       { name: "surface", usage: "Faixas, hover, campos desabilitados" },
       { name: "card", usage: "Fundo de cards" },
+      { name: "accent", usage: "Sálvia: destaque e decoração — nunca texto nem borda essencial" },
+      { name: "accent-soft", usage: "Sálvia clara: item ativo da navegação" },
     ],
   },
   {
@@ -45,16 +51,18 @@ const COLOR_GROUPS: { title: string; tokens: { name: string; usage: string }[] }
     tokens: [
       { name: "foreground", usage: "Texto principal, anel de foco no claro" },
       { name: "foreground-secondary", usage: "Descrições e metadados" },
-      { name: "neutral", usage: "Ícones e rótulos — só sobre background" },
+      { name: "neutral", usage: "Ícones e rótulos secundários" },
+      { name: "accent-foreground", usage: "Texto sobre sálvia (grafite escuro)" },
     ],
   },
   {
     title: "Marca",
     tokens: [
-      { name: "primary", usage: "Só o CTA principal" },
-      { name: "primary-hover", usage: "Hover do CTA (clareia)" },
-      { name: "primary-foreground", usage: "Rótulo sobre o coral" },
-      { name: "brand-teal", usage: "Destaques/ícones — nunca texto" },
+      { name: "primary", usage: "Verde grafite: botão primário, foco (cream no escuro)" },
+      { name: "primary-hover", usage: "Hover do botão primário" },
+      { name: "primary-foreground", usage: "Rótulo do botão primário" },
+      { name: "link", usage: "Links e botão ghost" },
+      { name: "brand-coral", usage: "Afeto: corações, mascote, celebração — nunca status, nunca fundo de botão" },
     ],
   },
   {
@@ -82,25 +90,66 @@ const COLOR_GROUPS: { title: string; tokens: { name: string; usage: string }[] }
 ];
 
 const TYPE_SCALE = [
-  { cls: "font-display text-hero-title", name: "hero-title", spec: "Nunito Sans 48/56 · 800", sample: "Outubro de 2026" },
-  { cls: "font-display text-section-title", name: "section-title", spec: "Nunito Sans 32/40 · 700", sample: "Contas do mês" },
-  { cls: "font-display text-card-title", name: "card-title", spec: "Nunito Sans 22/28 · 700", sample: "Viagem para Lisboa" },
-  { cls: "text-subtitle", name: "subtitle", spec: "DM Sans 18/24 · 600", sample: "Vencem esta semana" },
-  { cls: "text-body-large", name: "body-large", spec: "DM Sans 16/24 · 400", sample: "A fatura do cartão fecha no dia 5." },
-  { cls: "text-body", name: "body", spec: "DM Sans 14/20 · 400", sample: "Marcado como pago por Becca." },
-  { cls: "text-body-small", name: "body-small", spec: "DM Sans 12/16 · 400", sample: "Valores em reais, fuso de Brasília." },
-  { cls: "label-caps", name: "label", spec: "DM Sans 12/16 · 600 · caixa alta", sample: "Vencimento" },
+  { cls: "font-display text-hero-title", name: "hero-title", spec: "Nunito 48/56 · 800", sample: "Outubro de 2026" },
+  { cls: "font-display text-section-title", name: "section-title", spec: "Nunito 32/40 · 700", sample: "Contas do mês" },
+  { cls: "font-display text-card-title", name: "card-title", spec: "Nunito 22/28 · 700", sample: "Viagem para Lisboa" },
+  { cls: "text-subtitle", name: "subtitle", spec: "Nunito 18/24 · 600", sample: "Vencem esta semana" },
+  { cls: "text-body-large", name: "body-large", spec: "Nunito 16/24 · 400", sample: "A fatura do cartão fecha no dia 5." },
+  { cls: "text-body", name: "body", spec: "Nunito 14/20 · 400", sample: "Marcado como pago por Becca." },
+  { cls: "text-body-small", name: "body-small", spec: "Nunito 12/16 · 400", sample: "Valores em reais, fuso de Brasília." },
+  { cls: "label-caps", name: "label", spec: "Nunito 12/16 · 600 · caixa alta", sample: "Vencimento" },
   { cls: "font-mono text-code", name: "code", spec: "JetBrains Mono 14/20 · 400", sample: "lote_id: 2026-10-a1f3" },
 ];
 
 const SPACING = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20];
 
 const RADII = [
-  { cls: "rounded-xs", name: "xs · 4px", usage: "Badges, checkbox" },
-  { cls: "rounded-sm", name: "sm · 8px", usage: "Botões, campos, cards simples" },
-  { cls: "rounded-md", name: "md · 12px", usage: "Cards, modais" },
-  { cls: "rounded-lg", name: "lg · 16px", usage: "Painéis, bottom sheets" },
-  { cls: "rounded-pill", name: "pill", usage: "Chips, avatares, toggle" },
+  { cls: "rounded-xs", name: "xs · 6px", usage: "Checkbox, amostras" },
+  { cls: "rounded-sm", name: "sm · 10px", usage: "Ícones de categoria" },
+  { cls: "rounded-md", name: "md · 12px", usage: "Campos de texto" },
+  { cls: "rounded-lg", name: "lg · 16px", usage: "Cards, estados" },
+  { cls: "rounded-xl", name: "xl · 24px", usage: "Painéis, bottom sheets" },
+  { cls: "rounded-pill", name: "pill", usage: "Botões, badges, chips, navegação" },
+];
+
+const MASCOT_POSES: { pose: MascotPose; usage: string }[] = [
+  { pose: "acenando", usage: "Boas-vindas e primeiro uso" },
+  { pose: "feliz", usage: "Nada pendente (“Nada vencendo por aqui”)" },
+  { pose: "celebrando", usage: "Tudo pago no mês" },
+  { pose: "coracao", usage: "Momentos de afeto do casal" },
+  { pose: "piscando", usage: "Dicas leves" },
+];
+
+const APP_ICONS = [
+  { file: "casita-icon-cream", label: "Cream (padrão da PWA)" },
+  { file: "casita-icon-salvia", label: "Sálvia" },
+  { file: "casita-icon-grafite", label: "Grafite" },
+];
+
+const BASE_PALETTE = [
+  { name: "Cream", token: "background", role: "Fundo principal" },
+  { name: "Bege", token: "surface", role: "Superfícies e faixas" },
+  { name: "Sálvia", token: "accent", role: "Destaque e decoração (nunca texto)" },
+  { name: "Verde Grafite", token: "primary", role: "Primária: botão, links, foco" },
+  { name: "Coral", token: "brand-coral", role: "Afeto: corações e mascote (nunca status)" },
+];
+
+const VOICE = [
+  {
+    context: "Estado vazio",
+    good: "Nada vencendo por aqui. Aproveitem a semana!",
+    avoid: "Nenhum registro encontrado.",
+  },
+  {
+    context: "Conta atrasada",
+    good: "Aluguel atrasado há 2 dias · R$ 2.850,00. Marque como pago ou ajuste a data.",
+    avoid: "Opa, a casinha ficou triste… 🥺",
+  },
+  {
+    context: "Erro de importação",
+    good: "Não conseguimos ler a linha 14: a data “31/02/2026” não existe.",
+    avoid: "Algo deu errado. Tente novamente.",
+  },
 ];
 
 const ELEVATIONS = [
@@ -145,11 +194,11 @@ export default function DesignSystemPage() {
       </header>
 
       <div className="flex flex-col gap-4 py-8">
-        <p className="label-caps text-muted-foreground">Fase 0 · base visual</p>
+        <p className="label-caps text-muted-foreground">Casita · Sua vida em casa, mais leve.</p>
         <h1 className="text-section-title md:text-hero-title">Design system</h1>
         <p className="max-w-2xl text-body-large text-muted-foreground">
-          Tokens e componentes base do Stitchwithme, derivados do design system Coral Stay e ajustados para WCAG 2.1
-          AA. Troque o tema acima para conferir o modo escuro.
+          Marca, tokens e componentes da Casita, validados em WCAG 2.1 AA nos temas claro e escuro. Troque o tema acima
+          para conferir o modo escuro.
         </p>
         <nav aria-label="Seções do design system" className="pt-2">
           <ul role="list" className="flex flex-wrap gap-2">
@@ -168,6 +217,133 @@ export default function DesignSystemPage() {
       </div>
 
       <div className="flex flex-col gap-12">
+        {/* Marca */}
+        <Section
+          id="marca"
+          title="Marca"
+          description="Acolhedora, próxima e leve. Em erros, atrasos e valores, a clareza vem antes da fofura."
+        >
+          <div className="flex flex-col gap-12">
+            <div>
+              <Subheading>Logo</Subheading>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex flex-col items-center justify-center gap-6 rounded-lg border bg-background p-8 text-foreground">
+                  <BrandLogo variant="horizontal" theme="light" height={72} />
+                  <div className="flex items-end gap-8">
+                    <BrandLogo variant="stacked" theme="light" height={120} />
+                    <BrandLogo variant="symbol" height={72} />
+                  </div>
+                  <p className="text-body-small text-muted-foreground">Versão clara · sobre cream e bege</p>
+                </div>
+                <div className="dark flex flex-col items-center justify-center gap-6 rounded-lg border bg-background p-8 text-foreground">
+                  <BrandLogo variant="horizontal" theme="dark" height={72} />
+                  <div className="flex items-end gap-8">
+                    <BrandLogo variant="stacked" theme="dark" height={120} />
+                    <BrandLogo variant="wordmark" theme="dark" height={48} />
+                  </div>
+                  <p className="text-body-small text-muted-foreground">Versão escura · sobre o verde grafite profundo</p>
+                </div>
+              </div>
+              <p className="mt-4 max-w-2xl text-body text-muted-foreground">
+                O wordmark é Nunito 900 convertida em curvas: não depende de fonte instalada. Na navegação, o logo troca
+                sozinho para a versão escura.
+              </p>
+            </div>
+
+            <div>
+              <Subheading>Mascote</Subheading>
+              <ul role="list" className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {MASCOT_POSES.map((m) => (
+                  <li key={m.pose} className="flex flex-col items-center gap-3 rounded-lg border bg-card p-4 text-center">
+                    <Mascot pose={m.pose} size={104} />
+                    <p className="font-mono text-code">{m.pose}</p>
+                    <p className="text-body-small text-muted-foreground">{m.usage}</p>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 max-w-2xl text-body text-muted-foreground">
+                Sempre decorativo (alt vazio): o texto ao lado é que comunica. O mascote nunca aparece em erros nem em
+                itens atrasados.
+              </p>
+            </div>
+
+            <div>
+              <Subheading>Ícone do app</Subheading>
+              <ul role="list" className="flex flex-wrap gap-6">
+                {APP_ICONS.map((icon) => (
+                  <li key={icon.file} className="flex flex-col items-center gap-2">
+                    <Image
+                      src={`/brand/${icon.file}.svg`}
+                      alt=""
+                      width={96}
+                      height={96}
+                      unoptimized
+                      className="rounded-xl shadow-elevation-1"
+                    />
+                    <p className="text-body-small text-muted-foreground">{icon.label}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <Subheading>Paleta base</Subheading>
+              <ul role="list" className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {BASE_PALETTE.map((c) => (
+                  <li key={c.name} className="flex flex-col gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="h-20 rounded-lg border"
+                      style={{ background: themes.light[c.token] }}
+                    />
+                    <p className="text-body font-bold">{c.name}</p>
+                    <p className="tabular font-mono text-body-small text-muted-foreground">{themes.light[c.token]}</p>
+                    <p className="text-body-small text-muted-foreground">{c.role}</p>
+                  </li>
+                ))}
+              </ul>
+              <ul role="list" className="mt-6 flex max-w-3xl flex-col gap-2 text-body">
+                <li>
+                  <strong>Primário = verde grafite.</strong> Botão primário, links e foco.
+                </li>
+                <li>
+                  <strong>Coral nunca é cor de status</strong> nem fundo de botão com texto: é só afeto (corações,
+                  mascote, celebração).
+                </li>
+                <li>
+                  <strong>Sálvia nunca é texto nem borda essencial</strong> (cerca de 2:1 sobre o cream). Texto sobre
+                  sálvia usa grafite escuro.
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <Subheading>Tom de voz</Subheading>
+              <ul role="list" className="grid gap-4 md:grid-cols-3">
+                {VOICE.map((v) => (
+                  <li key={v.context} className="flex flex-col gap-3 rounded-lg border bg-card p-4">
+                    <p className="label-caps text-muted-foreground">{v.context}</p>
+                    <p className="flex items-start gap-2 text-body">
+                      <Check className="mt-0.5 size-4 shrink-0 text-status-paid-fg" aria-hidden="true" />
+                      <span>
+                        <span className="sr-only">Use: </span>
+                        {v.good}
+                      </span>
+                    </p>
+                    <p className="flex items-start gap-2 text-body text-muted-foreground">
+                      <X className="mt-0.5 size-4 shrink-0 text-status-overdue-fg" aria-hidden="true" />
+                      <span>
+                        <span className="sr-only">Evite: </span>
+                        {v.avoid}
+                      </span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Section>
+
         {/* Cores */}
         <Section id="cores" title="Cores" description="Cada amostra usa a variável CSS do tema atual. Os hex mostram os valores do tema claro e do escuro.">
           <div className="flex flex-col gap-10">
@@ -176,7 +352,7 @@ export default function DesignSystemPage() {
                 <Subheading>{group.title}</Subheading>
                 <ul role="list" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {group.tokens.map((t) => (
-                    <li key={t.name} className="flex items-center gap-4 rounded-md border bg-card p-4">
+                    <li key={t.name} className="flex items-center gap-4 rounded-lg border bg-card p-4">
                       <span
                         aria-hidden="true"
                         className="size-12 shrink-0 rounded-sm border border-input"
@@ -261,7 +437,11 @@ export default function DesignSystemPage() {
         </Section>
 
         {/* Tipografia */}
-        <Section id="tipografia" title="Tipografia" description="Nunito Sans para títulos, DM Sans para interface e valores, JetBrains Mono para códigos.">
+        <Section
+          id="tipografia"
+          title="Tipografia"
+          description="Nunito para títulos, interface e valores (no lugar da Poppins Rounded, por licença); JetBrains Mono para códigos."
+        >
           <ul role="list" className="flex flex-col">
             {TYPE_SCALE.map((t) => (
               <li key={t.name} className="flex flex-col gap-2 border-b py-4 last:border-b-0 md:flex-row md:items-baseline md:gap-8">
@@ -277,7 +457,10 @@ export default function DesignSystemPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Valores com tabular-nums</CardTitle>
-                <CardDescription>Classe .money: DM Sans 700 com algarismos de largura fixa — as casas decimais alinham.</CardDescription>
+                <CardDescription>
+                  Classe .money: Nunito 700. Os algarismos da Nunito já têm largura igual, então as casas decimais
+                  alinham.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <dl className="flex flex-col gap-2">
@@ -314,8 +497,8 @@ export default function DesignSystemPage() {
         </Section>
 
         {/* Raios */}
-        <Section id="raios" title="Raios" description="Nada é quadrado: todo elemento interativo tem pelo menos 4px.">
-          <ul role="list" className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+        <Section id="raios" title="Raios" description="Arredondados e generosos: cards em 16px, botões e badges em pílula.">
+          <ul role="list" className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
             {RADII.map((r) => (
               <li key={r.name} className="flex flex-col gap-2">
                 <span aria-hidden="true" className={cn("h-20 border-2 border-foreground bg-surface", r.cls)} />
@@ -359,8 +542,8 @@ export default function DesignSystemPage() {
                 </Button>
               </div>
               <p className="mt-4 max-w-2xl text-body text-muted-foreground">
-                Coral só no CTA principal, um por tela. O rótulo é escuro (#222) porque branco sobre coral fica em 3.05:1. O
-                hover clareia o coral para manter o rótulo acima de 4.5:1.
+                Primário em verde grafite com rótulo branco (no escuro, cream com rótulo grafite), um por tela. Todos os
+                botões têm formato de pílula e 48px de altura.
               </p>
             </div>
 
@@ -411,6 +594,15 @@ export default function DesignSystemPage() {
                   <CardFooter>
                     <p className="text-body-small text-muted-foreground">Variante interativa: sobe 2px no hover.</p>
                   </CardFooter>
+                </Card>
+                <Card tone="accent" className="md:col-span-2 md:flex-row md:items-center">
+                  <Mascot pose="celebrando" size={88} className="shrink-0" />
+                  <CardHeader>
+                    <CardTitle>Tudo pago em outubro!</CardTitle>
+                    <CardDescription>
+                      12 contas quitadas · <Money cents={418127} />. Variante de destaque em sálvia, com texto grafite.
+                    </CardDescription>
+                  </CardHeader>
                 </Card>
               </div>
             </div>
@@ -479,7 +671,12 @@ export default function DesignSystemPage() {
 
             <div>
               <Subheading>Estados vazio, carregando e erro</Subheading>
-              <div className="grid gap-6 lg:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-2">
+                <EmptyState
+                  mascot="feliz"
+                  title="Nada vencendo por aqui"
+                  description="Nenhuma conta vence nos próximos 7 dias. Aproveitem a semana!"
+                />
                 <EmptyState
                   icon={Receipt}
                   title="Nenhuma conta fixa"

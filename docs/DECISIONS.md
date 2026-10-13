@@ -35,3 +35,33 @@ Registro de decisões não óbvias (data · decisão · motivo).
 **Next.js 16 com `cacheComponents` (padrão do create-next-app 16.4).** Os componentes que usam `usePathname` ficam dentro de `Suspense` para não bloquear a pré-renderização quando surgirem rotas dinâmicas.
 
 **`@types/node` na versão 22.** Alinha com o Node 22 do ambiente e com a peer dependency do Vitest 5.
+
+## 2026-10-13 · Rebrand Casita
+
+Esta entrada **substitui** as decisões de cor da Fase 0 que vinham do Coral Stay (botão coral com rótulo escuro, hover que clareia, teal e cinzas neutros). O resto da Fase 0 continua valendo.
+
+**Nova identidade: Casita, "Sua vida em casa, mais leve."** A paleta base tem cream `#FFF8EE` (fundo), bege `#F4E8DC` (superfícies), sálvia `#A8B89F`, verde grafite `#4F6755` e coral `#F56B73`. Os tokens derivados foram validados par a par nos dois temas (veja a tabela em `/design-system`).
+
+**Primário = verde grafite.** Botão primário com rótulo branco (6.17:1), links (5.85:1 sobre o cream) e anel de foco. No modo escuro, o primário vira cream com rótulo grafite (10.87:1), como na splash escura do board.
+
+**Coral nunca é cor de status.** Também nunca é fundo de botão com texto: branco sobre coral fica em ~3:1. O coral (`--brand-coral`) é só afeto: corações, mascote e celebração. Nenhum par de contraste usa esse token, e um teste em `lib/tokens.test.ts` garante que nenhum token de status, erro ou primário tem o mesmo valor do coral.
+
+**Sálvia nunca é texto nem borda essencial.** Ela fica em ~2:1 sobre o cream. Usamos a sálvia como fundo de destaque (card `tone="accent"`), com texto em `--accent-foreground` `#2E3D33` (5.47:1). O item ativo da navegação usa a sálvia clara `--accent-soft` (9.31:1 com o texto).
+
+**Atrasado em vinho escuro (`#9C2524`), visivelmente diferente do coral.** A diferença de luminosidade entre os dois é de 2.68:1. No escuro, o atrasado puxa para o laranja-avermelhado (`#FFA48C`) para não parecer rosa. Os status continuam sempre com ícone + texto.
+
+**Borda de campo `#8A8274`.** Fica em ≥ 3:1 sobre o cream, o bege e o card (critério 1.4.11). Os divisores decorativos usam `--border`.
+
+**Nunito no lugar de Poppins Rounded.** A Poppins Rounded não está no Google Fonts, e não encontramos uma licença de uso web verificável (só um projeto pessoal no Behance). A Nunito tem licença OFL, terminais arredondados e é a mesma fonte do wordmark. Ela é usada em títulos, no corpo e nos valores. A DM Sans e a Nunito Sans saíram.
+
+**Valores monetários com algarismos de largura fixa.** A Nunito não tem a feature `tnum`, mas os dígitos 0–9 têm a mesma largura (600 unidades) em todos os pesos (verificado com fontTools). O `tabular-nums` continua declarado para as fontes de fallback. Não foi preciso uma fonte separada para números.
+
+**Wordmark em Nunito 900, convertido em curvas.** O logo não depende de fonte instalada. O componente `<Logo>` troca para a versão `-dark` pela classe `.dark`, só com CSS (sem flash).
+
+**O mascote não aparece em estados de erro nem em atrasos** (clareza antes de fofura). Ele é sempre decorativo (`alt=""`, `aria-hidden`). Usos: boas-vindas → `acenando`, nada pendente → `feliz`, tudo pago → `celebrando`.
+
+**Assets em `public/brand/` e ícones da PWA em `public/icons/`**, a partir do pacote `casita-brand`. A pasta do pacote não foi adicionada ao repositório. O favicon segue as convenções do App Router (`app/icon.svg`, `app/favicon.ico` e `app/apple-icon.png`).
+
+**PWA:** `app/manifest.ts` com `theme_color` `#4F6755` e `background_color` `#FFF8EE`. A cor da barra do navegador (`viewport.themeColor`) acompanha o tema: cream no claro e grafite profundo no escuro.
+
+**Sombras quentes** (`rgba(79, 58, 32, …)`) e **raios generosos**: cards com 16px; botões, badges e itens de navegação em pílula; campos com 12px.

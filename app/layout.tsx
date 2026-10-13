@@ -1,18 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, JetBrains_Mono, Nunito_Sans } from "next/font/google";
+import { JetBrains_Mono, Nunito } from "next/font/google";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+/** Nunito (variável): títulos, corpo e valores. Substitui Poppins Rounded (ver docs/DECISIONS.md). */
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const nunitoSans = Nunito_Sans({
-  variable: "--font-nunito-sans",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -22,14 +16,16 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Stitchwithme", template: "%s · Stitchwithme" },
-  description: "As finanças da casa num só lugar.",
+  title: { default: "Casita", template: "%s · Casita" },
+  description: "Sua vida em casa, mais leve.",
+  applicationName: "Casita",
+  appleWebApp: { title: "Casita", capable: true, statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#161616" },
+    { media: "(prefers-color-scheme: light)", color: "#fff8ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c2620" },
   ],
 };
 
@@ -38,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${nunitoSans.variable} ${jetbrainsMono.variable} antialiased`}
+      className={`${nunito.variable} ${jetbrainsMono.variable} antialiased`}
     >
       <head>
         {/* Aplica o tema salvo antes da primeira pintura (sem flash). */}

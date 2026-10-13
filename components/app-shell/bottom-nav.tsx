@@ -25,12 +25,17 @@ export function BottomNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative flex flex-1 flex-col items-center justify-center gap-0.5 text-label font-semibold transition-colors duration-150",
-                  active
-                    ? "text-foreground after:absolute after:inset-x-4 after:top-0 after:h-0.5 after:rounded-pill after:bg-foreground"
-                    : "text-muted-foreground",
+                  active ? "font-bold text-foreground" : "text-muted-foreground",
                 )}
               >
-                <section.icon className="size-6" strokeWidth={active ? 2.25 : 1.75} aria-hidden="true" />
+                <span
+                  className={cn(
+                    "flex h-7 w-12 items-center justify-center rounded-pill transition-colors duration-150",
+                    active && "bg-accent-soft",
+                  )}
+                >
+                  <section.icon className="size-5" strokeWidth={active ? 2.25 : 1.75} aria-hidden="true" />
+                </span>
                 <span className="max-w-full truncate px-0.5">{section.shortLabel}</span>
               </Link>
             </li>

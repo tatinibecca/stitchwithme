@@ -1,17 +1,24 @@
 import type { LucideIcon } from "lucide-react";
 import { CircleAlert, Inbox } from "lucide-react";
+import { Mascot, type MascotPose } from "@/components/brand/mascot";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-/** Estado vazio: explica o que vai aparecer aqui e qual é o próximo passo. */
+/**
+ * Estado vazio: explica o que vai aparecer aqui e qual é o próximo passo.
+ * `mascot` troca o ícone pelo mascote (decorativo). Use com parcimônia:
+ * boas-vindas → "acenando", nada pendente → "feliz", tudo pago → "celebrando".
+ */
 export function EmptyState({
   icon: Icon = Inbox,
+  mascot,
   title,
   description,
   action,
   className,
 }: {
   icon?: LucideIcon;
+  mascot?: MascotPose;
   title: string;
   description: string;
   action?: React.ReactNode;
@@ -20,13 +27,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-4 rounded-md border border-dashed border-input px-6 py-12 text-center",
+        "flex flex-col items-center gap-4 rounded-lg border border-dashed border-input bg-card px-6 py-12 text-center",
         className,
       )}
     >
-      <span className="flex size-12 items-center justify-center rounded-pill bg-surface text-foreground">
-        <Icon className="size-6" aria-hidden="true" />
-      </span>
+      {mascot ? (
+        <Mascot pose={mascot} size={112} />
+      ) : (
+        <span className="flex size-12 items-center justify-center rounded-pill bg-accent-soft text-foreground">
+          <Icon className="size-6" aria-hidden="true" />
+        </span>
+      )}
       <div className="flex max-w-sm flex-col gap-1">
         <h2 className="text-subtitle">{title}</h2>
         <p className="text-body text-muted-foreground">{description}</p>
@@ -36,7 +47,7 @@ export function EmptyState({
   );
 }
 
-/** Estado de erro: anunciado ao leitor de tela e sempre com uma saída. */
+/** Estado de erro: anunciado ao leitor de tela e sempre com uma saída. Sem mascote: clareza antes de fofura. */
 export function ErrorState({
   title = "Não foi possível carregar",
   description,
@@ -55,7 +66,7 @@ export function ErrorState({
     <div
       role={live ? "alert" : undefined}
       className={cn(
-        "flex flex-col items-center gap-4 rounded-md border border-destructive bg-status-overdue-bg px-6 py-12 text-center",
+        "flex flex-col items-center gap-4 rounded-lg border border-destructive bg-status-overdue-bg px-6 py-12 text-center",
         className,
       )}
     >

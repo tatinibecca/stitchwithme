@@ -13,7 +13,7 @@ export function Sidebar() {
 
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-8 border-r bg-background px-4 py-6 md:flex">
-      <Logo className="px-3" />
+      <Logo className="px-2" height={44} />
       <nav aria-label="Principal" className="flex flex-1 flex-col gap-6">
         {MODULES.map((appModule) => (
           <div key={appModule.id} className="flex flex-col gap-1">
@@ -30,9 +30,9 @@ export function Sidebar() {
                       href={section.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "relative flex min-h-touch items-center gap-3 rounded-sm px-3 text-body-large transition-colors duration-150",
+                        "relative flex min-h-touch items-center gap-3 rounded-pill px-4 text-body-large transition-colors duration-150",
                         active
-                          ? "bg-surface font-semibold text-foreground before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-pill before:bg-foreground"
+                          ? "bg-accent-soft font-bold text-foreground"
                           : "text-muted-foreground hover:bg-surface hover:text-foreground",
                       )}
                     >

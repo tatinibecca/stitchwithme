@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img">
+  <title>Casita</title>
+  <rect width="256" height="256" rx="56.32" fill="#FFF8EE"/>
+  <g transform="translate(-16.88 -7.05) scale(1.2278)">
+  <ellipse cx="92" cy="203" rx="19" ry="10" fill="#FFF8EE" stroke="#2E3D33" stroke-width="5"/>
+  <ellipse cx="148" cy="203" rx="19" ry="10" fill="#FFF8EE" stroke="#2E3D33" stroke-width="5"/>
+  <rect x="148" y="30" width="22" height="44" rx="5" fill="#6B8270" stroke="#2E3D33" stroke-width="5"/>
+  <path d="M54 104 L118 46 L186 104 L188 178 Q188 200 166 200 L74 200 Q52 200 52 178 Z" fill="#FFF8EE" stroke="#2E3D33" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M30 116 L118 30 L208 116" fill="none" stroke="#2E3D33" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 116 L118 30 L208 116" fill="none" stroke="#6B8270" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M44 108 L118 36" fill="none" stroke="#A8B89F" stroke-width="5" stroke-linecap="round" opacity=".55"/>
+  <ellipse cx="86" cy="160" rx="11" ry="7" fill="#F4A3A0" opacity=".85"/>
+  <ellipse cx="154" cy="160" rx="11" ry="7" fill="#F4A3A0" opacity=".85"/>
+  <ellipse cx="101" cy="143" rx="5.5" ry="7" fill="#2E3D33"/>
+  <circle cx="102.8" cy="140.5" r="1.8" fill="#FFFFFF"/>
+  <ellipse cx="139" cy="143" rx="5.5" ry="7" fill="#2E3D33"/>
+  <circle cx="140.8" cy="140.5" r="1.8" fill="#FFFFFF"/>
+  <path d="M110 156 Q120 165 130 156" fill="none" stroke="#2E3D33" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+</svg>

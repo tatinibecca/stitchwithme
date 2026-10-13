@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
 /*
- * Tokens do Stitchwithme — base: design system "Coral Stay".
+ * Tokens da Casita — "Sua vida em casa, mais leve."
  * Esta é a fonte única de verdade das cores. O teste lib/tokens.test.ts lê
  * este arquivo e falha se algum par texto/fundo ficar abaixo do WCAG AA.
- * Extensões ao design system estão registradas em docs/DECISIONS.md.
+ * Regras de marca (docs/DECISIONS.md, 2026-10-13 · Rebrand Casita):
+ * - primário = verde grafite; coral é só afeto (corações, mascote, celebração),
+ *   nunca status e nunca fundo de botão com texto;
+ * - sálvia é superfície de destaque e decoração, nunca texto nem borda essencial.
  */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -12,80 +15,96 @@
 :root {
   color-scheme: light;
 
-  /* Superfícies */
-  --background: #ffffff;
-  --surface: #f7f7f7;
-  --card: #ffffff;
+  /* Superfícies: cream, bege e card levemente mais claro */
+  --background: #fff8ee;
+  --surface: #f4e8dc;
+  --card: #fffcf7;
 
-  /* Texto */
-  --foreground: #222222;
-  --foreground-secondary: #717171;
-  --neutral: #767676;
+  /* Sálvia: destaque e decoração. Texto sobre ela sempre em --accent-foreground. */
+  --accent: #a8b89f;
+  --accent-soft: #e3eadc;
+  --accent-foreground: #2e3d33;
 
-  /* Marca — coral só no CTA principal. Rótulo escuro (5.21:1), não branco. */
-  --primary: #ff5a5f;
-  --primary-hover: #ff7479;
-  --primary-foreground: #222222;
-  --brand-teal: #00a699;
+  /* Texto: grafite escuro e um verde-acinzentado quente */
+  --foreground: #2e3d33;
+  --foreground-secondary: #5b6658;
+  --neutral: #5b6658;
+
+  /* Primário: verde grafite com rótulo branco (6.17:1) */
+  --primary: #4f6755;
+  --primary-hover: #3e5444;
+  --primary-foreground: #ffffff;
+  --link: #4f6755;
+
+  /* Coral: acento de marca e afeto. Nenhum par de texto usa este token. */
+  --brand-coral: #f56b73;
 
   /* Linhas */
-  --border: #dddddd;
-  --input: #858585;
-  --ring: #222222;
+  --border: #e6d9c9;
+  --input: #8a8274;
+  --ring: #4f6755;
 
-  /* Erro de formulário / ação destrutiva */
-  --destructive: #c13515;
+  /* Erro de formulário / ação destrutiva: o mesmo vinho do "atrasado" */
+  --destructive: #9c2524;
 
   /* Status: texto e ícone usam -fg; o fundo do badge usa -bg */
-  --status-paid-fg: #006e04;
-  --status-paid-bg: #e7f5e7;
-  --status-due-fg: #8a4b00;
-  --status-due-bg: #fdf0e1;
-  --status-overdue-fg: #a12c11;
-  --status-overdue-bg: #fbe9e5;
-  --status-info-fg: #1a5ea8;
-  --status-info-bg: #e7f0fb;
+  --status-paid-fg: #2f6a3a;
+  --status-paid-bg: #e4eedc;
+  --status-due-fg: #85520a;
+  --status-due-bg: #f9e9cf;
+  --status-overdue-fg: #9c2524;
+  --status-overdue-bg: #f8e0dc;
+  --status-info-fg: #2d5a86;
+  --status-info-bg: #e1eaf3;
 
-  /* Sombras */
-  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
-  --elevation-2: 0 2px 4px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
-  --elevation-3: 0 6px 20px rgba(0, 0, 0, 0.12), 0 16px 40px rgba(0, 0, 0, 0.16);
+  /* Sombras quentes (marrom da madeira, não preto) */
+  --elevation-1: 0 1px 2px rgba(79, 58, 32, 0.06), 0 4px 14px rgba(79, 58, 32, 0.06);
+  --elevation-2: 0 2px 6px rgba(79, 58, 32, 0.08), 0 10px 28px rgba(79, 58, 32, 0.1);
+  --elevation-3: 0 6px 20px rgba(79, 58, 32, 0.12), 0 18px 44px rgba(79, 58, 32, 0.14);
 }
 
+/* Modo escuro: verde grafite profundo, como a splash escura do board */
 .dark {
   color-scheme: dark;
 
-  --background: #161616;
-  --surface: #222222;
-  --card: #222222;
+  --background: #1c2620;
+  --surface: #243129;
+  --card: #2a382f;
 
-  --foreground: #f2f2f2;
-  --foreground-secondary: #b0b0b0;
-  --neutral: #9a9a9a;
+  --accent: #a8b89f;
+  --accent-soft: #34463a;
+  --accent-foreground: #2e3d33;
 
-  --primary: #ff5a5f;
-  --primary-hover: #ff7479;
-  --primary-foreground: #222222;
-  --brand-teal: #2cc4b6;
+  --foreground: #fff8ee;
+  --foreground-secondary: #c9c2b5;
+  --neutral: #c9c2b5;
 
-  --border: #3a3a3a;
-  --input: #7a7a7a;
-  --ring: #f2f2f2;
+  /* Primário vira cream com rótulo grafite (10.87:1) */
+  --primary: #fff8ee;
+  --primary-hover: #f4e8dc;
+  --primary-foreground: #2e3d33;
+  --link: #c3d3b9;
 
-  --destructive: #ff8a75;
+  --brand-coral: #f56b73;
 
-  --status-paid-fg: #7fd68a;
-  --status-paid-bg: #12291a;
-  --status-due-fg: #f5b56b;
-  --status-due-bg: #2e2110;
-  --status-overdue-fg: #ff9a85;
-  --status-overdue-bg: #331713;
-  --status-info-fg: #8dbdf5;
-  --status-info-bg: #13233a;
+  --border: #3a4a3f;
+  --input: #8f9a8c;
+  --ring: #fff8ee;
 
-  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
-  --elevation-2: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.45);
-  --elevation-3: 0 6px 20px rgba(0, 0, 0, 0.55), 0 16px 40px rgba(0, 0, 0, 0.5);
+  --destructive: #ffa48c;
+
+  --status-paid-fg: #9bd8a4;
+  --status-paid-bg: #173322;
+  --status-due-fg: #f2c27a;
+  --status-due-bg: #33280f;
+  --status-overdue-fg: #ffa48c;
+  --status-overdue-bg: #3d1b19;
+  --status-info-fg: #a3c6ec;
+  --status-info-bg: #16283b;
+
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.25);
+  --elevation-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.35);
+  --elevation-3: 0 6px 20px rgba(0, 0, 0, 0.45), 0 18px 44px rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
@@ -98,10 +117,14 @@
   --color-muted: var(--surface);
   --color-muted-foreground: var(--foreground-secondary);
   --color-neutral: var(--neutral);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-foreground: var(--accent-foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
-  --color-brand-teal: var(--brand-teal);
+  --color-link: var(--link);
+  --color-brand-coral: var(--brand-coral);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -115,9 +138,10 @@
   --color-status-info-fg: var(--status-info-fg);
   --color-status-info-bg: var(--status-info-bg);
 
-  /* Famílias (variáveis definidas por next/font em app/layout.tsx) */
-  --font-display: var(--font-nunito-sans), system-ui, sans-serif;
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  /* Famílias (variáveis definidas por next/font em app/layout.tsx).
+     Nunito no lugar de Poppins Rounded: ver docs/DECISIONS.md. */
+  --font-display: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+  --font-sans: var(--font-nunito), ui-rounded, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   /* Escala tipográfica do design system */
@@ -148,11 +172,12 @@
   --text-code: 0.875rem;
   --text-code--line-height: 1.25rem;
 
-  /* Raios */
-  --radius-xs: 4px;
-  --radius-sm: 8px;
+  /* Raios: arredondados e generosos (cards 16px, botões em pílula) */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-pill: 9999px;
 
   /* Elevação */
@@ -173,7 +198,10 @@
  * (16px), space-6 = p-6 (24px)... space-20 = p-20 (80px).
  */
 
-/* Valores monetários: DM Sans 700 com algarismos tabulares */
+/* Valores monetários: Nunito 700 com algarismos tabulares.
+   A Nunito não tem a feature "tnum", mas os dígitos dela já têm largura igual
+   (600 unidades em todos os pesos, verificado); tabular-nums fica declarado
+   para fontes de fallback. */
 @utility money {
   font-family: var(--font-sans);
   font-weight: 700;
@@ -216,7 +244,7 @@
     font-family: var(--font-display);
   }
 
-  /* Foco: anel sólido de 2px em text-primary com offset de 2px */
+  /* Foco: anel sólido de 2px em --ring (grafite no claro, cream no escuro) */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
