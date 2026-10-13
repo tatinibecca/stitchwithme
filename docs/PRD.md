@@ -53,7 +53,8 @@ Além disso, a planilha exige trabalho manual de formatação e categorização 
 - **Modelo de divisão (atualizado na v1.2):**
   - **Contas fixas e assinaturas:** um responsável por item, como antes.
   - **Cartões:** o cartão tem um **pagador** (quem paga a fatura; por exemplo, o BTG é debitado automaticamente na conta da Rebecca), mas **cada transação tem seu próprio responsável**. Um cartão pode ser compartilhado.
-  - **Responsáveis podem ser pessoas que não usam o app** (por exemplo, um familiar que usa o cartão). Elas aparecem como "pessoas" na casa, sem login.
+  - **Responsáveis podem ser pessoas que não usam o app.** Exemplo real: a Martha (mãe da Rebecca) usa o cartão BTG. Ela aparece como "pessoa" na casa, sem login.
+  - **O acerto é opcional por cartão.** No BTG ele existe (Thiago e Martha devolvem a parte deles para a Rebecca). Em cartões de **benefício (vale-alimentação/refeição)**, o responsável é só **informativo** ("quem pagou o quê, para ter uma ideia"), sem gerar acerto.
   - Transações sem responsável definido ficam como **"A confirmar"** até alguém atribuir.
   - **Acerto:** quando a parte de alguém é paga por outra pessoa (o pagador do cartão), o app calcula quanto essa pessoa deve devolver, por competência, e registra os reembolsos (ver 4.3c).
 - Onboarding: um membro cria a casa e convida o outro por e-mail (link de convite).
@@ -111,7 +112,7 @@ Assinaturas são uma **entidade própria**, separada das contas fixas, porque co
 ### 4.3c Acerto entre o casal
 - Para cada fatura, o app calcula a **parte de cada responsável**. Quando o pagador do cartão é diferente do responsável, essa parte vira um **valor a acertar** (por exemplo, a parte do Thiago numa fatura que é debitada da conta da Rebecca).
 - Visão de acerto por competência: parte devida, valor devolvido, saldo e status (pendente, parcial, quitado).
-- Registrar reembolso: valor, data, quem pagou a quem e observação. Um reembolso pode quitar várias competências (o mais antigo primeiro, com possibilidade de escolher).
+- Registrar reembolso: valor, data, quem pagou a quem, **forma** (Pix/transferência, dinheiro ou **resgate de investimento**) e observação. A parte da Martha costuma ser quitada com um resgate da parte dela num investimento compartilhado, feito pela Rebecca. Um reembolso pode quitar várias competências (o mais antigo primeiro, com possibilidade de escolher).
 - Saldo total em aberto em destaque ("Thiago → Rebecca: R$ X em aberto").
 - Transações "A confirmar" ficam fora do cálculo até serem atribuídas, e o app avisa quando isso acontece ("R$ X ainda sem responsável nesta fatura").
 
@@ -170,15 +171,16 @@ households(id, name, created_at)
 members(id, household_id, user_id, display_name, role)
 categories(id, household_id, name, icon, color, is_default)
 people(id, household_id, member_id null, display_name)   -- inclui quem não usa o app
-cards(id, household_id, payer_person_id, name, bank, last4, closing_day, due_day,
-      bill_payment_method, csv_mapping jsonb)
+cards(id, household_id, payer_person_id, name, bank, last4, kind (credit|benefit),
+      generates_settlement bool, closing_day, due_day, bill_payment_method, csv_mapping jsonb)
 statements(id, card_id, reference_month, due_date, purchase_period_start, purchase_period_end,
            total_amount, credits_amount, import_batch_id, source_format, reconciled bool, status)
 transactions(id, household_id, card_id, statement_id, date, description_raw, description_normalized,
              amount, kind, installment_current, installment_total, category_id,
              responsible_person_id null=a confirmar, import_batch_id, dedupe_hash)
 responsibility_rules(id, household_id, match_pattern, person_id, created_by)
-settlements(id, household_id, from_person_id, to_person_id, amount, paid_at, note, created_by)
+settlements(id, household_id, from_person_id, to_person_id, amount, paid_at,
+            method (pix|cash|investment_withdrawal|other), note, created_by)
 settlement_allocations(id, settlement_id, statement_id, amount)
 category_rules(id, household_id, match_pattern, category_id, created_by)
 import_batches(id, household_id, card_id, file_name, created_by, created_at, rows_imported, rows_skipped)
@@ -282,7 +284,12 @@ Se o agente identificar uma alternativa mais simples com o mesmo resultado, ele 
 - [x] ~~Gastos compartilhados no cartão~~ → resolvido na v1.2: responsável por transação.
 - [x] ~~PDF na v1?~~ → sim, os bancos do casal são focados em PDF.
 - [ ] Os PDFs das faturas têm senha? Precisamos de um PDF de cada banco para os testes (mantido fora do Git).
-- [ ] Gastos de uso comum da casa no cartão (mercado, por exemplo) são de um responsável ou divididos 50/50? Se divididos, o MVP precisa de um responsável "Casa (50/50)".
+- [x] ~~Compras de uso comum~~ → sem regra de divisão. Mercado é pago no vale e o registro de quem pagou é só informativo.
+- [ ] Os vales têm extrato em PDF ou CSV? Se não tiverem, o lançamento no vale pode ser manual e rápido, ou ficar para o módulo Mercado.
 - [ ] Quais bancos e cartões vamos importar? Precisamos de **um CSV de exemplo de cada** para criar os testes do parser.
 - [ ] Registrar renda no MVP para mostrar o saldo do mês, ou deixar para a v2?
 - [ ] Importar o histórico da planilha atual (migração única) ou começar do zero?
+
+### Backlog v2 (fora do MVP)
+- **Reservas por pessoa:** acompanhar o saldo da parte da Martha no investimento compartilhado, descontando automaticamente os resgates usados para quitar a parte dela no cartão.
+- Conexão com o sistema de compras do mês que o casal já usa no Notion (módulo Mercado).
