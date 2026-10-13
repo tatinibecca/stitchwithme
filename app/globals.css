@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+/*
+ * Tokens do Stitchwithme — base: design system "Coral Stay".
+ * Esta é a fonte única de verdade das cores. O teste lib/tokens.test.ts lê
+ * este arquivo e falha se algum par texto/fundo ficar abaixo do WCAG AA.
+ * Extensões ao design system estão registradas em docs/DECISIONS.md.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+
+  /* Superfícies */
+  --background: #ffffff;
+  --surface: #f7f7f7;
+  --card: #ffffff;
+
+  /* Texto */
+  --foreground: #222222;
+  --foreground-secondary: #717171;
+  --neutral: #767676;
+
+  /* Marca — coral só no CTA principal. Rótulo escuro (5.21:1), não branco. */
+  --primary: #ff5a5f;
+  --primary-hover: #ff7479;
+  --primary-foreground: #222222;
+  --brand-teal: #00a699;
+
+  /* Linhas */
+  --border: #dddddd;
+  --input: #858585;
+  --ring: #222222;
+
+  /* Erro de formulário / ação destrutiva */
+  --destructive: #c13515;
+
+  /* Status: texto e ícone usam -fg; o fundo do badge usa -bg */
+  --status-paid-fg: #006e04;
+  --status-paid-bg: #e7f5e7;
+  --status-due-fg: #8a4b00;
+  --status-due-bg: #fdf0e1;
+  --status-overdue-fg: #a12c11;
+  --status-overdue-bg: #fbe9e5;
+  --status-info-fg: #1a5ea8;
+  --status-info-bg: #e7f0fb;
+
+  /* Sombras */
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --elevation-2: 0 2px 4px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+  --elevation-3: 0 6px 20px rgba(0, 0, 0, 0.12), 0 16px 40px rgba(0, 0, 0, 0.16);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #161616;
+  --surface: #222222;
+  --card: #222222;
+
+  --foreground: #f2f2f2;
+  --foreground-secondary: #b0b0b0;
+  --neutral: #9a9a9a;
+
+  --primary: #ff5a5f;
+  --primary-hover: #ff7479;
+  --primary-foreground: #222222;
+  --brand-teal: #2cc4b6;
+
+  --border: #3a3a3a;
+  --input: #7a7a7a;
+  --ring: #f2f2f2;
+
+  --destructive: #ff8a75;
+
+  --status-paid-fg: #7fd68a;
+  --status-paid-bg: #12291a;
+  --status-due-fg: #f5b56b;
+  --status-due-bg: #2e2110;
+  --status-overdue-fg: #ff9a85;
+  --status-overdue-bg: #331713;
+  --status-info-fg: #8dbdf5;
+  --status-info-bg: #13233a;
+
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --elevation-2: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.45);
+  --elevation-3: 0 6px 20px rgba(0, 0, 0, 0.55), 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  /* Cores — nomes compatíveis com shadcn/ui */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--foreground-secondary);
+  --color-neutral: var(--neutral);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-brand-teal: var(--brand-teal);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-status-paid-fg: var(--status-paid-fg);
+  --color-status-paid-bg: var(--status-paid-bg);
+  --color-status-due-fg: var(--status-due-fg);
+  --color-status-due-bg: var(--status-due-bg);
+  --color-status-overdue-fg: var(--status-overdue-fg);
+  --color-status-overdue-bg: var(--status-overdue-bg);
+  --color-status-info-fg: var(--status-info-fg);
+  --color-status-info-bg: var(--status-info-bg);
+
+  /* Famílias (variáveis definidas por next/font em app/layout.tsx) */
+  --font-display: var(--font-nunito-sans), system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Escala tipográfica do design system */
+  --text-hero-title: 3rem;
+  --text-hero-title--line-height: 3.5rem;
+  --text-hero-title--letter-spacing: -0.01em;
+  --text-hero-title--font-weight: 800;
+  --text-section-title: 2rem;
+  --text-section-title--line-height: 2.5rem;
+  --text-section-title--font-weight: 700;
+  --text-card-title: 1.375rem;
+  --text-card-title--line-height: 1.75rem;
+  --text-card-title--font-weight: 700;
+  --text-subtitle: 1.125rem;
+  --text-subtitle--line-height: 1.5rem;
+  --text-subtitle--font-weight: 600;
+  --text-body-large: 1rem;
+  --text-body-large--line-height: 1.5rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  --text-body-small: 0.75rem;
+  --text-body-small--line-height: 1rem;
+  --text-body-small--letter-spacing: 0.01em;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.02em;
+  --text-label--font-weight: 600;
+  --text-code: 0.875rem;
+  --text-code--line-height: 1.25rem;
+
+  /* Raios */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Elevação */
+  --shadow-elevation-1: var(--elevation-1);
+  --shadow-elevation-2: var(--elevation-2);
+  --shadow-elevation-3: var(--elevation-3);
+
+  /* Layout */
+  --container-page: 1280px;
+  --spacing-touch: 48px;
+  --spacing-bottom-nav: 56px;
+  --spacing-header: 80px;
+}
+
+/*
+ * Espaçamento: a escala padrão do Tailwind (--spacing: 0.25rem) coincide com a
+ * do design system — space-1 = p-1 (4px), space-2 = p-2 (8px), space-4 = p-4
+ * (16px), space-6 = p-6 (24px)... space-20 = p-20 (80px).
+ */
+
+/* Valores monetários: DM Sans 700 com algarismos tabulares */
+@utility money {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rótulo de campo/segmento em caixa alta */
+@utility label-caps {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-body-large);
+    line-height: var(--text-body-large--line-height);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  /* Foco: anel sólido de 2px em text-primary com offset de 2px */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
