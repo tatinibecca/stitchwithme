@@ -7,6 +7,14 @@ A especificação completa está em `docs/PRD.md`. **Leia o PRD antes de qualque
 ## Stack
 Next.js (App Router) + TypeScript + Tailwind + shadcn/ui · Supabase (Postgres, Auth, RLS, Edge Functions) · Vitest + Playwright · Deploy na Vercel.
 
+## Comunicação com a dona do projeto
+A pessoa que usa este projeto é **designer, não desenvolvedora**. Ao final de cada tarefa, explique em linguagem simples, sem jargão técnico:
+1. **O que mudou visualmente.**
+2. **Como ver o resultado:** um link ou um passo a passo.
+3. **O que ela precisa decidir ou revisar.**
+
+Detalhes técnicos (comandos, testes, nomes de arquivo) ficam em segundo plano: só quando forem necessários, e explicados.
+
 ## Forma de trabalhar
 - Trabalhe **uma fase por vez** (PRD, seção 10). Antes de codar, apresente o plano da fase e aguarde aprovação.
 - Ao terminar uma fase: rode lint, typecheck e testes; liste o que foi feito e como testar manualmente; sugira a mensagem de commit.
