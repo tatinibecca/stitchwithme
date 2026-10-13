@@ -28,3 +28,21 @@ export function formatDueDate(isoDate: string): string {
   // Meio-dia UTC fica no mesmo dia em America/Sao_Paulo (UTC-3).
   return shortDate.format(new Date(Date.UTC(y, m - 1, d, 12)));
 }
+
+const monthYear = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: TIME_ZONE });
+
+/** "2026-10" → "Outubro de 2026" */
+export function formatMonthYear(yearMonth: string): string {
+  const [y, m] = yearMonth.split("-").map(Number);
+  const label = monthYear.format(new Date(Date.UTC(y, m - 1, 15, 12)));
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+/** "2027-07-31" → "jul/2027" */
+export function formatShortMonthYear(isoDate: string): string {
+  const [y, m] = isoDate.split("-").map(Number);
+  const month = new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: TIME_ZONE })
+    .format(new Date(Date.UTC(y, m - 1, 15, 12)))
+    .replace(".", "");
+  return `${month}/${y}`;
+}

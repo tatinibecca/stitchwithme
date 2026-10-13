@@ -5,7 +5,7 @@ import { StatusBadge } from "./status-badge";
 describe("StatusBadge", () => {
   it.each([
     ["paid", "Pago"],
-    ["due", "A vencer"],
+    ["due", "A pagar"],
     ["overdue", "Atrasado"],
     ["info", "Info"],
   ] as const)("status %s mostra texto e ícone, não só cor", (status, label) => {

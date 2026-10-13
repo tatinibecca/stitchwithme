@@ -35,3 +35,30 @@ Registro de decisões não óbvias (data · decisão · motivo).
 **Next.js 16 com `cacheComponents` (padrão do create-next-app 16.4).** Os componentes que usam `usePathname` ficam dentro de `Suspense` para não bloquear a pré-renderização quando surgirem rotas dinâmicas.
 
 **`@types/node` na versão 22.** Alinha com o Node 22 do ambiente e com a peer dependency do Vitest 5.
+
+## 2026-10-13 · Home de Finanças com dados fictícios (sem banco)
+
+**Mocks no formato do PRD §6.** `lib/finance/types.ts` usa os mesmos nomes de tabela e coluna do modelo de dados. `lib/finance/mock-data.ts` traz a casa de Becca e Thiago em outubro de 2026, com "hoje" fixo em 13/10, para o cenário não mudar com o tempo. Só `lib/finance/repository.ts` sabe que os dados são fictícios. Na fase com banco, só ele muda.
+
+**Extensões ao modelo do PRD:**
+- `household_id` em `statements`, `bill_occurrences`, `subscription_charges` e `goal_contributions`. É a regra do CLAUDE.md e a base da RLS.
+- `statements.paid_at` e `statements.paid_by_member_id`, para mostrar quem marcou a fatura como paga (PRD §9).
+
+**Cálculo da visão do mês numa função pura (`lib/finance/month-overview.ts`), coberta por testes.** Os testes garantem que o total pago + a vencer + atrasado é igual à soma por responsável e à soma por categoria. Também garantem que assinaturas no cartão nunca contam duas vezes: elas aparecem na lista como "No cartão X", mas o valor entra só pela fatura.
+
+**Assinatura em débito/boleto (`card_id` nulo) é um pagamento próprio.** Ela entra nos totais e aceita "Marcar como pago". O pagamento do mês é um `subscription_charges` sem `transaction_id`.
+
+**Lista do mês agrupada em "Atrasadas", "Próximas" e "Pagas ou já cobradas".** Os atrasados ficam no topo e, dentro de cada grupo, a ordem é cronológica. A divisão em grupos é um ajuste à "lista única" do PRD §4.5: no protótipo, as contas pagas no começo do mês ficavam entre as atrasadas e as próximas e atrapalhavam a leitura.
+
+**"Atrasado" nunca é armazenado.** É calculado comparando o vencimento com o dia de hoje (PRD §4.1).
+
+**Total mensal de assinaturas:** soma as ativas, com as anuais divididas por 12. As que estão em teste grátis aparecem à parte ("1 em teste").
+
+**"Marcar como pago" funciona só na sessão aberta**, porque ainda não há banco. Recarregar a página volta ao cenário original. Contas com valor estimado ainda não pedem o valor real (PRD §4.1): fica para a fase de contas fixas.
+
+**Parâmetros de protótipo na URL:**
+- `?mes=AAAA-MM` navega entre os meses.
+- `?estado=vazio` simula o primeiro acesso.
+- `?estado=carregando` mostra o esqueleto de carregamento.
+
+O parâmetro `estado` sai quando o banco entrar.

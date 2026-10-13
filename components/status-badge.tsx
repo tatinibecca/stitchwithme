@@ -5,7 +5,7 @@ export type Status = "paid" | "due" | "overdue" | "info";
 
 const STATUS: Record<Status, { label: string; icon: LucideIcon }> = {
   paid: { label: "Pago", icon: CircleCheck },
-  due: { label: "A vencer", icon: Clock },
+  due: { label: "A pagar", icon: Clock },
   overdue: { label: "Atrasado", icon: TriangleAlert },
   info: { label: "Info", icon: Info },
 };
@@ -14,14 +14,18 @@ const STATUS: Record<Status, { label: string; icon: LucideIcon }> = {
 export function StatusBadge({
   status,
   label,
+  icon,
   className,
 }: {
   status: Status;
   /** Substitui o texto padrão, ex.: "Atrasado há 3 dias" */
   label?: string;
+  /** Substitui o ícone padrão, ex.: cartão para "No cartão Itaú" */
+  icon?: LucideIcon;
   className?: string;
 }) {
-  const { label: defaultLabel, icon: Icon } = STATUS[status];
+  const { label: defaultLabel, icon: defaultIcon } = STATUS[status];
+  const Icon = icon ?? defaultIcon;
   return (
     <Badge variant={status} className={className}>
       <Icon aria-hidden="true" />

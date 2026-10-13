@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatBRL, formatDueDate } from "./format";
+import { formatBRL, formatDueDate, formatMonthYear, formatShortMonthYear } from "./format";
 
 // Intl usa espaço não separável entre "R$" e o número.
 const nbsp = (s: string) => s.replace(/ /g, " ");
@@ -26,5 +26,16 @@ describe("formatDueDate", () => {
   it("mantém o dia do calendário no fuso de São Paulo", () => {
     expect(formatDueDate("2026-10-15")).toBe("15 de out.");
     expect(formatDueDate("2026-01-01")).toBe("01 de jan.");
+  });
+});
+
+describe("formatMonthYear", () => {
+  it("nome do mês por extenso, com inicial maiúscula", () => {
+    expect(formatMonthYear("2026-10")).toBe("Outubro de 2026");
+    expect(formatMonthYear("2027-01")).toBe("Janeiro de 2027");
+  });
+
+  it("formato curto para metas", () => {
+    expect(formatShortMonthYear("2027-07-31")).toBe("jul/2027");
   });
 });
