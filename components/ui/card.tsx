@@ -4,13 +4,22 @@ import { cn } from "@/lib/utils";
 function Card({
   className,
   interactive = false,
+  tone = "default",
   ...props
-}: React.ComponentProps<"div"> & { interactive?: boolean }) {
+}: React.ComponentProps<"div"> & {
+  interactive?: boolean;
+  /** "accent": fundo sálvia para destaques; o texto usa --accent-foreground (5.47:1) */
+  tone?: "default" | "accent";
+}) {
   return (
     <div
       data-slot="card"
+      data-tone={tone}
       className={cn(
-        "flex flex-col gap-4 rounded-md border bg-card p-6 text-card-foreground shadow-elevation-1",
+        "group/card flex flex-col gap-4 rounded-lg border p-6 shadow-elevation-1",
+        tone === "accent"
+          ? "border-transparent bg-accent text-accent-foreground"
+          : "bg-card text-card-foreground",
         interactive &&
           "transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevation-2 motion-reduce:hover:translate-y-0",
         className,
@@ -31,7 +40,11 @@ function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
 }
 
 function CardDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return <p data-slot="card-description" className={cn("text-body text-muted-foreground", className)} {...props} />;
+  return <p
+      data-slot="card-description"
+      className={cn("text-body text-muted-foreground group-data-[tone=accent]/card:text-accent-foreground", className)}
+      {...props}
+    />;
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {

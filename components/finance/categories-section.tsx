@@ -41,7 +41,7 @@ export function CategoriesSection({
                 </span>
               </div>
               <div aria-hidden="true" className="h-2 overflow-hidden rounded-pill bg-border">
-                <div className="h-full rounded-pill bg-foreground" style={{ width: `${(c.amount / max) * 100}%` }} />
+                <div className="h-full rounded-pill bg-primary" style={{ width: `${(c.amount / max) * 100}%` }} />
               </div>
             </li>
           ))}

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CalendarDays, Check, CreditCard, Plus } from "lucide-react";
+import { Check, CreditCard, Plus } from "lucide-react";
+import { Mascot } from "@/components/brand/mascot";
 import { Button } from "@/components/ui/button";
 
 /** Estado vazio do primeiro acesso: o que aparece aqui e o próximo passo. */
@@ -7,13 +8,11 @@ export function FirstSteps({ partnerName }: { partnerName: string | null }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col items-center gap-3 text-center md:flex-row md:items-start md:gap-5 md:text-left">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-pill bg-surface md:size-16">
-          <CalendarDays className="size-7" aria-hidden="true" />
-        </span>
+        <Mascot pose="acenando" size={96} className="shrink-0" />
         <div className="flex flex-col gap-1">
-          <h3 className="text-subtitle font-bold">Nenhuma conta neste mês</h3>
+          <h3 className="text-subtitle font-bold">Boas-vindas à Casita!</h3>
           <p className="max-w-xl text-body text-muted-foreground md:text-body-large">
-            Cadastre as contas fixas da casa. Elas aparecem aqui em ordem de vencimento, com o responsável de cada uma.
+            Nenhuma conta neste mês ainda. Cadastre as contas fixas da casa: elas aparecem aqui em ordem de vencimento, com o responsável de cada uma.
           </p>
         </div>
       </div>
@@ -21,7 +20,7 @@ export function FirstSteps({ partnerName }: { partnerName: string | null }) {
       <div className="flex flex-col gap-3">
         <p className="label-caps text-muted-foreground">Primeiros passos · {partnerName ? "1" : "0"} de 3</p>
         <ol className="grid gap-3 md:grid-cols-3">
-          <li className="flex gap-3 rounded-md bg-status-paid-bg p-4 text-status-paid-fg md:flex-col md:p-5">
+          <li className="flex gap-3 rounded-lg bg-status-paid-bg p-4 text-status-paid-fg md:flex-col md:p-5">
             <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-pill bg-status-paid-fg text-status-paid-bg">
               <Check className="size-4" strokeWidth={2.5} />
             </span>
@@ -30,7 +29,7 @@ export function FirstSteps({ partnerName }: { partnerName: string | null }) {
               <span className="text-body">{partnerName ? `Concluído · ${partnerName} já entrou` : "Pendente"}</span>
             </div>
           </li>
-          <li className="flex gap-3 rounded-md border-2 border-foreground p-4 md:flex-col md:p-5">
+          <li className="flex gap-3 rounded-lg border-2 border-primary p-4 md:flex-col md:p-5">
             <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-pill border-2 border-foreground text-body font-bold">
               2
             </span>
@@ -46,7 +45,7 @@ export function FirstSteps({ partnerName }: { partnerName: string | null }) {
               </Button>
             </div>
           </li>
-          <li className="flex gap-3 rounded-md border p-4 md:flex-col md:p-5">
+          <li className="flex gap-3 rounded-lg border bg-card p-4 md:flex-col md:p-5">
             <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-pill border-[1.5px] border-input text-body font-bold text-muted-foreground">
               3
             </span>

@@ -26,4 +26,22 @@ describe("tokens de app/globals.css", () => {
       expect(r.ratio, `${r.fgHex} sobre ${r.bgHex}`).toBeGreaterThanOrEqual(r.min);
     });
   });
+
+  describe("regras da marca Casita", () => {
+    it("coral nunca é cor de status nem de texto (não aparece em nenhum par)", () => {
+      const used = CONTRAST_PAIRS.flatMap((p) => [p.fg, p.bg]);
+      expect(used).not.toContain("brand-coral");
+      for (const theme of ["light", "dark"] as const) {
+        const coral = themes[theme]["brand-coral"];
+        const statusValues = Object.entries(themes[theme])
+          .filter(([name]) => name.startsWith("status-") || name === "destructive" || name === "primary")
+          .map(([, value]) => value);
+        expect(statusValues, `tema ${theme}`).not.toContain(coral);
+      }
+    });
+
+    it("sálvia nunca é texto nem borda (só aparece como fundo)", () => {
+      expect(CONTRAST_PAIRS.filter((p) => p.fg === "accent")).toEqual([]);
+    });
+  });
 });

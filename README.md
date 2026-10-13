@@ -1,4 +1,4 @@
-# Stitchwithme
+# Casita
 
 App web responsivo (PWA) para um casal gerenciar a casa. O MVP cobre o módulo **Finanças**.
 

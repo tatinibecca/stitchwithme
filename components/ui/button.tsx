@@ -4,14 +4,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-sm font-sans text-body-large font-semibold transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-pill font-sans text-body-large font-bold transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        /** Coral, uma por tela. Rótulo escuro para passar no AA (5.21:1). */
+        /** Verde grafite com rótulo branco (6.17:1); cream com rótulo grafite no escuro. Um por tela. */
         primary: "bg-primary text-primary-foreground hover:bg-primary-hover",
         secondary: "border border-foreground bg-transparent text-foreground hover:bg-surface",
-        ghost: "bg-transparent text-foreground underline underline-offset-4 hover:bg-surface",
+        ghost: "bg-transparent text-link underline underline-offset-4 hover:bg-surface",
       },
       size: {
         md: "min-h-touch px-6 py-3",

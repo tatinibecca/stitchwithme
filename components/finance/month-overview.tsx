@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { CircleCheck } from "lucide-react";
+import { Mascot } from "@/components/brand/mascot";
+import { formatBRL } from "@/lib/format";
 import { formatMonthYear } from "@/lib/format";
 import {
   buildMonthOverview,
@@ -41,6 +43,8 @@ export function MonthOverview({
 
   const overview = useMemo(() => buildMonthOverview(data, month, today, overrides), [data, month, today, overrides]);
   const monthLabel = formatMonthYear(month);
+  const allPaid =
+    !overview.isMonthEmpty && overview.totals.overdueCount === 0 && overview.totals.dueCount === 0 && overview.totals.paidCount > 0;
   const partner = data.members.find((m) => m.id !== currentMemberId) ?? null;
 
   function markAsPaid(item: MonthItem) {
@@ -107,10 +111,27 @@ export function MonthOverview({
               <FirstSteps partnerName={partner?.display_name ?? null} />
             </div>
           ) : overview.isMonthEmpty ? (
-            <p className="pb-4 text-body-large text-muted-foreground">
-              Nenhuma conta, fatura ou assinatura em {monthLabel.toLowerCase()}.
-            </p>
+            <div className="flex flex-col items-center gap-3 pb-6 text-center">
+              <Mascot pose="feliz" size={96} />
+              <p className="text-subtitle font-bold">Nada vencendo por aqui</p>
+              <p className="text-body text-muted-foreground">
+                Nenhuma conta, fatura ou assinatura em {monthLabel.toLowerCase()}.
+              </p>
+            </div>
           ) : (
+            <>
+            {allPaid && (
+              <div className="mt-1 flex items-center gap-4 rounded-lg bg-accent p-4 text-accent-foreground">
+                <Mascot pose="celebrando" size={72} className="shrink-0" />
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-subtitle font-bold">Tudo pago em {monthLabel.split(" ")[0].toLowerCase()}!</p>
+                  <p className="text-body">
+                    {overview.totals.paidCount} {overview.totals.paidCount === 1 ? "conta quitada" : "contas quitadas"} ·{" "}
+                    <span className="money">{formatBRL(overview.totals.paid)}</span>
+                  </p>
+                </div>
+              </div>
+            )}
             <BillsGroups
               overdue={overview.overdue}
               upcoming={overview.upcoming}
@@ -118,6 +139,7 @@ export function MonthOverview({
               members={data.members}
               onPay={markAsPaid}
             />
+            </>
           )}
         </section>
 

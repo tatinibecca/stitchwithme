@@ -75,7 +75,7 @@ export function GoalsSection({ goals }: { goals: GoalProgress[] }) {
                   aria-valuetext={`${g.percent}%`}
                   className="h-2.5 flex-1 overflow-hidden rounded-pill bg-border"
                 >
-                  <div className="h-full rounded-pill bg-foreground" style={{ width: `${g.percent}%` }} />
+                  <div className="h-full rounded-pill bg-primary" style={{ width: `${g.percent}%` }} />
                 </div>
                 <span className="money w-10 text-right text-body">{g.percent}%</span>
               </div>
