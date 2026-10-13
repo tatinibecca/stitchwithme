@@ -139,9 +139,12 @@ Fase 4 do PRD (seções 3, 4.3 e 4.3c, versão 1.2). Leia o PRD antes.
    transações "A confirmar" (ficam fora do cálculo, com aviso).
 4. Tela de Acertos: por competência (devido, devolvido, saldo,
    status) e saldo total em aberto em destaque. Registrar reembolso,
-   alocando nas competências mais antigas primeiro.
-5. Cadastro de pessoas da casa sem login (por exemplo, um familiar
-   que usa o cartão).
+   alocando nas competências mais antigas primeiro, com a forma do
+   pagamento (Pix, dinheiro ou resgate de investimento).
+5. Cadastro de pessoas da casa sem login (a Martha, minha mãe, usa
+   o cartão BTG e devolve a parte dela via resgate de investimento).
+6. Cartões têm tipo (crédito ou benefício/vale) e a opção "gera
+   acerto". No vale, o responsável é só informativo, sem acerto.
 
 Ao final, compare com private/planilha/: a divisão de set/2026 por
 pessoa deve bater com a planilha. Mostre só o comparativo de totais.
@@ -151,6 +154,7 @@ Explique em linguagem simples.
 **Como validar**
 - A divisão de set/2026 por pessoa bate com a planilha.
 - Registre um reembolso de teste e veja o saldo diminuir na competência certa.
+- Confira que a parte da Martha aparece separada da do Thiago, cada uma com o seu saldo.
 - Importe a próxima fatura e veja quantas transações já vêm com o responsável sugerido.
 
 ---
