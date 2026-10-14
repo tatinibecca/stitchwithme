@@ -42,3 +42,4 @@ next-env.d.ts
 
 # arquivos reais (faturas, planilha): nunca versionar
 /private/
+!.env.example

@@ -4,6 +4,7 @@ import { HomeSkeleton } from "@/components/finance/home-skeleton";
 import { MonthOverview } from "@/components/finance/month-overview";
 import { isYearMonth, monthOf } from "@/lib/finance/month-overview";
 import { getFinanceSnapshot } from "@/lib/finance/repository";
+import { requireHousehold } from "@/lib/auth/dal";
 
 export const metadata: Metadata = { title: "Visão do mês" };
 
@@ -16,7 +17,7 @@ export default function MonthOverviewPage({ searchParams }: PageProps<"/financas
 }
 
 async function Home({ searchParams }: Pick<PageProps<"/financas">, "searchParams">) {
-  const params = await searchParams;
+  const [params] = await Promise.all([searchParams, requireHousehold()]);
   // Protótipo sem banco: ?estado=vazio simula o primeiro acesso; ?estado=carregando mostra o esqueleto.
   if (params.estado === "carregando") return <HomeSkeleton />;
 

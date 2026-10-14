@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { UsersRound } from "lucide-react";
 import { Logo } from "./logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MODULES, isSectionActive } from "@/lib/modules";
@@ -46,6 +47,17 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
+      <Link
+        href="/casa"
+        aria-current={pathname === "/casa" ? "page" : undefined}
+        className={cn(
+          "flex min-h-touch items-center gap-3 rounded-pill px-4 text-body-large transition-colors duration-150",
+          pathname === "/casa" ? "bg-accent-soft font-bold text-foreground" : "text-muted-foreground hover:bg-surface hover:text-foreground",
+        )}
+      >
+        <UsersRound className="size-5 shrink-0" aria-hidden="true" />
+        Nossa casa
+      </Link>
       <ThemeToggle variant="full" />
     </aside>
   );

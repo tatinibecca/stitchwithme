@@ -92,3 +92,27 @@ Esta entrada **substitui** as decisões de cor da Fase 0 que vinham do Coral Sta
 **PWA:** `app/manifest.ts` com `theme_color` `#4F6755` e `background_color` `#FFF8EE`. A cor da barra do navegador (`viewport.themeColor`) acompanha o tema: cream no claro e grafite profundo no escuro.
 
 **Sombras quentes** (`rgba(79, 58, 32, …)`) e **raios generosos**: cards com 16px; botões, badges e itens de navegação em pílula; campos com 12px.
+
+## 2026-10-14 · Fase 1: casa, membros, pessoas e convites
+
+**Login por link mágico no e-mail (Supabase Auth), sem senha.** É a opção aprovada. O Google pode entrar depois sem mudar o modelo.
+
+**Convite por link para copiar ou mandar no WhatsApp.** Convite por e-mail automático depende de um serviço de e-mail, previsto para a Fase 8. O link vale 7 dias, serve para uma pessoa e pode ser cancelado. O banco guarda só o hash SHA-256 do token: nem os membros da casa conseguem ler o token de volta.
+
+**Tabela extra `household_invites`, fora do PRD §6.** É necessária para o convite por link (validade, uso único, cancelamento).
+
+**Membros também são pessoas.** Ao criar a casa ou aceitar o convite, o banco cria a pessoa ligada ao membro (`people.member_id`). Assim, nas próximas fases, gastos e acertos sempre apontam para `people`, e a Martha entra como pessoa sem login.
+
+**Uma casa por usuário no MVP** (`members_one_household_per_user`). Isso simplifica a RLS e as telas, e o PRD prevê uma casa só.
+
+**Escrita sensível só por funções no banco (RPC):** criar casa, gerar convite, ver convite e aceitar convite. As tabelas têm permissões por coluna. Ninguém se promove a dono, liga uma pessoa a um membro ou lê o hash do convite. Erros saem do banco como códigos estáveis em inglês (`invite_expired`...) e a interface traduz (`lib/auth/errors.ts`).
+
+**Proxy (o antigo middleware) renova a sessão e manda para /entrar quem não está logado.** A proteção de verdade fica na RLS e na camada de acesso `lib/auth/dal.ts`, que manda quem não tem casa para /comecar. O `?next=` só aceita caminhos internos, para evitar redirecionamento aberto.
+
+**Modo demonstração.** Sem as variáveis do Supabase, o app roda com os dados fictícios e sem login. Isso deixa ver as telas sem banco, como na prévia publicada.
+
+**Testes de RLS num Postgres de verdade (`npm run test:db`).** Um shim imita o essencial do Supabase: o schema `auth`, `auth.uid()`, os papéis `anon` e `authenticated` e os privilégios padrão do schema public. Os testes provam que uma casa não lê nem altera dados de outra. Por padrão eles usam o Postgres do `npx supabase start` (porta 54322). Conferi que pegam falhas: com a RLS sabotada, 4 testes quebram.
+
+**Dependências novas:**
+- `@supabase/supabase-js` e `@supabase/ssr`: cliente e sessão em cookies no Next.js.
+- `pg` (dev): testes de RLS.

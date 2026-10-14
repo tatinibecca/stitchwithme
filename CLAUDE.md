@@ -37,5 +37,5 @@ Detalhes técnicos (comandos, testes, nomes de arquivo) ficam em segundo plano: 
 - Todas as telas precisam de estados vazio, carregando e erro.
 
 ## Comandos
-- `npm run dev` · `npm run lint` · `npm run typecheck` · `npm test` · `npm run test:e2e`
+- `npm run dev` · `npm run lint` · `npm run typecheck` · `npm test` · `npm run test:db` (RLS, precisa do Postgres do `npx supabase start`) · `npm run test:e2e`
 - `npx supabase start` · `npx supabase db reset` · `npx supabase migration new <nome>`
