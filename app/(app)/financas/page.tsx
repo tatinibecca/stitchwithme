@@ -4,7 +4,6 @@ import { HomeSkeleton } from "@/components/finance/home-skeleton";
 import { MonthOverview } from "@/components/finance/month-overview";
 import { isYearMonth, monthOf } from "@/lib/finance/month-overview";
 import { getFinanceSnapshot } from "@/lib/finance/repository";
-import { requireHousehold } from "@/lib/auth/dal";
 
 export const metadata: Metadata = { title: "Visão do mês" };
 
@@ -17,12 +16,13 @@ export default function MonthOverviewPage({ searchParams }: PageProps<"/financas
 }
 
 async function Home({ searchParams }: Pick<PageProps<"/financas">, "searchParams">) {
-  const [params] = await Promise.all([searchParams, requireHousehold()]);
+  const params = await searchParams;
   // Protótipo sem banco: ?estado=vazio simula o primeiro acesso; ?estado=carregando mostra o esqueleto.
   if (params.estado === "carregando") return <HomeSkeleton />;
 
-  const snapshot = await getFinanceSnapshot({ simulateEmpty: params.estado === "vazio" });
-  const month = isYearMonth(params.mes) ? params.mes : monthOf(snapshot.today);
+  const requested = isYearMonth(params.mes) ? params.mes : undefined;
+  const snapshot = await getFinanceSnapshot({ simulateEmpty: params.estado === "vazio", month: requested });
+  const month = requested ?? monthOf(snapshot.today);
 
   return (
     <MonthOverview
@@ -30,6 +30,7 @@ async function Home({ searchParams }: Pick<PageProps<"/financas">, "searchParams
       month={month}
       today={snapshot.today}
       currentMemberId={snapshot.currentMemberId}
+      live={snapshot.live}
     />
   );
 }

@@ -91,14 +91,23 @@ export interface Bill {
   is_estimated: boolean;
   due_day: number;
   recurrence_rule: "monthly" | "yearly" | string;
+  /** extensão: mês do vencimento das contas anuais */
+  due_month?: number | null;
   reminder_offsets: number[];
+  /** extensão */
+  payment_method?: string | null;
+  notes?: string | null;
   active: boolean;
+  /** extensão: primeiro mês em que a conta vence ("YYYY-MM-01") */
+  starts_on?: ISODate;
 }
 
 export interface BillOccurrence {
   id: Id;
   household_id: Id;
   bill_id: Id;
+  /** extensão: mês de referência ("YYYY-MM-01") */
+  reference_month?: ISODate;
   due_date: ISODate;
   expected_amount: Cents;
   paid_amount: Cents | null;

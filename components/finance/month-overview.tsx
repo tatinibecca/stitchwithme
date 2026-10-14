@@ -21,6 +21,8 @@ import { OwnersSection } from "./owners-section";
 import { SectionHeading } from "./section-heading";
 import { SuggestionsNotice } from "./suggestions-notice";
 import { SummarySection } from "./summary-section";
+import { PayDialog } from "@/components/bills/pay-dialog";
+import { usePayFlow } from "@/components/bills/use-pay-flow";
 
 /**
  * Home do módulo Finanças. Antes do banco, "Marcar como pago" vive só nesta
@@ -31,12 +33,16 @@ export function MonthOverview({
   month,
   today,
   currentMemberId,
+  live = false,
 }: {
   data: FinanceData;
   month: YearMonth;
   today: ISODate;
   currentMemberId: Id;
+  /** Com login: "Marcar como pago" salva no banco (contas fixas). Sem login: simulação na sessão. */
+  live?: boolean;
 }) {
+  const flow = usePayFlow();
   const [overrides, setOverrides] = useState<PaidOverrides>({});
   const [lastPaid, setLastPaid] = useState<MonthItem | null>(null);
   const [noticeDismissed, setNoticeDismissed] = useState(false);
@@ -48,6 +54,12 @@ export function MonthOverview({
   const partner = data.members.find((m) => m.id !== currentMemberId) ?? null;
 
   function markAsPaid(item: MonthItem) {
+    if (live) {
+      if (item.kind === "bill") {
+        flow.open({ occurrenceId: item.sourceId, name: item.name, expectedAmount: item.amount, isEstimated: item.isEstimated, dueDate: item.dueDate });
+      }
+      return;
+    }
     setOverrides((prev) => ({
       ...prev,
       [item.id]: { paid_at: today, paid_by_member_id: currentMemberId, paid_amount: item.amount },
@@ -91,6 +103,20 @@ export function MonthOverview({
           />
 
           <div aria-live="polite" aria-atomic="true">
+            {flow.lastPaid && (
+              <div className="flex items-center gap-2 rounded-sm bg-status-paid-bg py-0.5 pr-1 pl-3 text-body text-status-paid-fg">
+                <CircleCheck className="size-4.5 shrink-0" aria-hidden="true" />
+                <span className="flex-1">Pagamento de {flow.lastPaid.name} registrado.</span>
+                <button
+                  type="button"
+                  onClick={flow.undo}
+                  disabled={flow.undoing}
+                  className="min-h-11 cursor-pointer rounded-sm px-3 font-semibold underline underline-offset-4 hover:bg-background/60"
+                >
+                  Desfazer
+                </button>
+              </div>
+            )}
             {lastPaid && (
               <div className="flex items-center gap-2 rounded-sm bg-status-paid-bg py-0.5 pr-1 pl-3 text-body text-status-paid-fg">
                 <CircleCheck className="size-4.5 shrink-0" aria-hidden="true" />
@@ -159,6 +185,7 @@ export function MonthOverview({
           <GoalsSection goals={overview.goals} />
         </div>
       </div>
+      {live && <PayDialog target={flow.target} today={today} onClose={flow.close} onPaid={flow.paid} />}
     </div>
   );
 }

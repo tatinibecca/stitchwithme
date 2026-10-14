@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import { Check, CircleCheck, Clock, CreditCard, Receipt, Repeat, TriangleAlert } from "lucide-react";
+import Link from "next/link";
+import { Check, CircleCheck, Clock, CreditCard, Pencil, Receipt, Repeat, TriangleAlert, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Money } from "@/components/money";
 import { StatusBadge } from "@/components/status-badge";
@@ -23,15 +24,22 @@ const KIND_LABEL: Record<ItemKind, string> = {
 };
 
 /** Colunas no desktop: ícone · conta (com responsável) · valor · ação */
-const ROW_GRID = "md:grid md:grid-cols-[2.5rem_minmax(0,1fr)_8rem_11rem] md:items-center md:gap-4";
+const ROW_GRID = "md:grid md:grid-cols-[2.5rem_minmax(0,1fr)_8rem_minmax(11rem,auto)] md:items-center md:gap-4";
 
-interface RowProps {
-  item: MonthItem;
-  members: Member[];
+interface RowActions {
   onPay: (item: MonthItem) => void;
+  /** Desfazer o pagamento de uma conta já paga */
+  onUnpay?: (item: MonthItem) => void;
+  /** Link de edição (só contas fixas) */
+  editHref?: (item: MonthItem) => string | null;
 }
 
-function ItemRow({ item, members, onPay }: RowProps) {
+interface RowProps extends RowActions {
+  item: MonthItem;
+  members: Member[];
+}
+
+function ItemRow({ item, members, onPay, onUnpay, editHref }: RowProps) {
   const ownerIndex = Math.max(0, members.findIndex((m) => m.id === item.ownerMemberId));
   const owner = members[ownerIndex];
   const memberName = (id: string) => members.find((m) => m.id === id)?.display_name ?? "alguém";
@@ -75,6 +83,23 @@ function ItemRow({ item, members, onPay }: RowProps) {
       )
     ) : null;
 
+  const href = editHref?.(item) ?? null;
+  const editLink = href ? (
+    <Link
+      href={href}
+      aria-label={`Editar ${item.name}`}
+      className="inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-muted-foreground transition-colors duration-150 hover:bg-surface hover:text-foreground"
+    >
+      <Pencil className="size-5" aria-hidden="true" />
+    </Link>
+  ) : null;
+  const unpayButton =
+    onUnpay && item.status === "paid" && item.kind === "bill" ? (
+      <Button type="button" variant="ghost" onClick={() => onUnpay(item)} className="min-h-11 px-3 text-body">
+        <Undo2 /> Desfazer pagamento
+      </Button>
+    ) : null;
+
   return (
     <li className={cn("flex gap-3 border-t py-4", ROW_GRID)}>
       <span
@@ -100,10 +125,20 @@ function ItemRow({ item, members, onPay }: RowProps) {
           <MemberChip member={owner} index={ownerIndex} />
         </div>
         {item.status === "overdue" && payButton("mt-1.5 w-full md:hidden")}
+        {(unpayButton || editLink) && (
+          <div className="flex items-center justify-end gap-1 md:hidden">
+            {unpayButton}
+            {editLink}
+          </div>
+        )}
       </div>
 
       <Money cents={amount} className="hidden text-right whitespace-nowrap md:block" />
-      <div className="hidden md:block">{payButton("w-full")}</div>
+      <div className="hidden items-center justify-end gap-1 md:flex">
+        {payButton("flex-1")}
+        {unpayButton}
+        {editLink}
+      </div>
 
       {item.status === "due" && payButton("self-center md:hidden", true)}
     </li>
@@ -116,14 +151,13 @@ function Group({
   tone,
   items,
   members,
-  onPay,
-}: {
+  ...actions
+}: RowActions & {
   title: string;
   icon: LucideIcon;
   tone: string;
   items: MonthItem[];
   members: Member[];
-  onPay: (item: MonthItem) => void;
 }) {
   if (items.length === 0) return null;
   return (
@@ -134,7 +168,7 @@ function Group({
       </h3>
       <ul role="list">
         {items.map((item) => (
-          <ItemRow key={item.id} item={item} members={members} onPay={onPay} />
+          <ItemRow key={item.id} item={item} members={members} {...actions} />
         ))}
       </ul>
     </div>
@@ -146,13 +180,16 @@ export function BillsGroups({
   upcoming,
   settled,
   members,
-  onPay,
-}: {
+  upcomingTitle = "Próximas",
+  settledTitle = "Pagas ou já cobradas",
+  ...actions
+}: RowActions & {
   overdue: MonthItem[];
   upcoming: MonthItem[];
   settled: MonthItem[];
   members: Member[];
-  onPay: (item: MonthItem) => void;
+  upcomingTitle?: string;
+  settledTitle?: string;
 }) {
   return (
     <div>
@@ -165,9 +202,9 @@ export function BillsGroups({
         <span className="text-right">Valor</span>
         <span />
       </div>
-      <Group title="Atrasadas" icon={TriangleAlert} tone="text-status-overdue-fg" items={overdue} members={members} onPay={onPay} />
-      <Group title="Próximas" icon={Clock} tone="text-muted-foreground" items={upcoming} members={members} onPay={onPay} />
-      <Group title="Pagas ou já cobradas" icon={CircleCheck} tone="text-status-paid-fg" items={settled} members={members} onPay={onPay} />
+      <Group title="Atrasadas" icon={TriangleAlert} tone="text-status-overdue-fg" items={overdue} members={members} {...actions} />
+      <Group title={upcomingTitle} icon={Clock} tone="text-muted-foreground" items={upcoming} members={members} {...actions} />
+      <Group title={settledTitle} icon={CircleCheck} tone="text-status-paid-fg" items={settled} members={members} {...actions} />
     </div>
   );
 }

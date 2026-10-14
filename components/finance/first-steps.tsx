@@ -39,7 +39,7 @@ export function FirstSteps({ partnerName }: { partnerName: string | null }) {
                 <span className="text-body text-muted-foreground">Aluguel, condomínio, luz, água, internet… Leva uns 5 minutos.</span>
               </div>
               <Button asChild className="self-start">
-                <Link href="/financas/contas">
+                <Link href="/financas/contas/nova">
                   <Plus /> Cadastrar contas
                 </Link>
               </Button>

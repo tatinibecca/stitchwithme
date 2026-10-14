@@ -116,3 +116,39 @@ Esta entrada **substitui** as decisões de cor da Fase 0 que vinham do Coral Sta
 **Dependências novas:**
 - `@supabase/supabase-js` e `@supabase/ssr`: cliente e sessão em cookies no Next.js.
 - `pg` (dev): testes de RLS.
+
+## 2026-10-14 · Fase 2: contas fixas e ocorrências
+
+**Conta (`bills`) é o modelo; ocorrência (`bill_occurrences`) é o mês.**
+
+**Extensões ao PRD:**
+- `bills.due_month`: mês das contas anuais.
+- `bills.starts_on`: primeiro mês em que a conta vence.
+- `bills.payment_method` e `bills.notes`.
+- `bill_occurrences.reference_month`, com uma ocorrência por conta por mês, para a "Luz — out/2026" não duplicar se a data mudar.
+- `categories` já nasce nesta fase: as 12 categorias padrão do PRD são criadas para cada casa por um gatilho.
+
+**Ocorrências geradas sob demanda, não por cron.** Ao abrir um mês, o app chama `generate_bill_occurrences`, que é idempotente. É mais simples que uma Edge Function com cron e tem o mesmo resultado para dois usuários. O cron pode voltar na Fase 8 (lembretes).
+
+**Regra de data igual no banco e no app** (`public.bill_due_date` e `lib/bills/recurrence.ts`), testada com os mesmos casos nos dois lados:
+- dia 29, 30 ou 31 vira o último dia nos meses mais curtos;
+- fevereiro bissexto;
+- conta anual só no mês dela.
+
+**"Atrasado" é calculado no app com o "hoje" de America/Sao_Paulo**, nunca gravado.
+
+**Escrita em ocorrências só por funções.** "Marcar como paga" grava o valor, a data e **quem marcou**. Quem marcou é sempre quem chamou a função: ninguém marca em nome do outro. Existe também "desfazer pagamento".
+
+**Edição:**
+- **"Só a deste mês":** muda o valor e a data da ocorrência, se ela ainda não foi paga e a data continua no mesmo mês.
+- **"Deste mês em diante":** muda a conta e reaplica nas ocorrências não pagas a partir do mês. O passado e as pagas não mudam (histórico).
+
+**Arquivar em vez de apagar.** Conta arquivada para de gerar vencimentos e mantém o histórico. Dá para reativar.
+
+**Conta estimada pede o valor real ao marcar como paga.** O campo vem vazio, com o valor previsto como dica.
+
+**Valores digitados em reais ("1.234,56") viram centavos por `parseBRLToCents`**, sem float. Entradas ambíguas como "12.34" são recusadas.
+
+**Home com login:** mostra as contas fixas reais. Faturas, assinaturas e metas aparecem vazias até as suas fases (3, 6 e 9), em vez de misturar dados fictícios com reais.
+
+**Formulários preservam o que foi digitado quando há erro.** O React 19 limpa o formulário depois do envio, então os valores voltam do servidor junto com o erro.

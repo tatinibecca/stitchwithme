@@ -1,7 +1,10 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
-import { Client } from "pg";
+import { Client, types } from "pg";
+
+// Datas (tipo date) chegam como "YYYY-MM-DD", sem conversão de fuso.
+types.setTypeParser(1082, (value) => value);
 
 /**
  * Banco de teste descartável. Por padrão usa o Postgres do `npx supabase start`
